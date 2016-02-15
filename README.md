@@ -57,6 +57,10 @@ Don't forget to delete index.php, base, module, theme and all files inside it af
 ## Documentation :
 Coming soon
 
+## Upgrade
+
+ - 20160216 / Convert SQL to Base64 to Bypass WAF / @phith0n
+
 ## Old Version :
 If your browser is not supported, or any other reason, you can view old version here
 https://code.google.com/p/b374k-shell/
