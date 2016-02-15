@@ -234,7 +234,7 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 
 	if($con!==false){
 		if(isset($p['dbQuery'])){
-			$query = $p['dbQuery'];
+			$query = base64_decode($p['dbQuery']);
 			$pagination = "";
 			if((isset($p['dbDB']))&&(isset($p['dbTable']))){
 				$db = trim($p['dbDB']);

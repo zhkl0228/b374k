@@ -133,6 +133,7 @@ function db_run(){
 	dbQuery = $('#dbQuery').val();
 
 	if((dbQuery!='')&&(dbQuery!='You can also press ctrl+enter to submit')){
+		dbQuery = b64encode(dbQuery)
 		send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort, dbQuery:dbQuery}, function(res){
 			if(res!='error'){
 				$('#dbResult').html(res);
@@ -176,4 +177,62 @@ function db_pagination(type){
 		if(start<0) start = 0;
 	}
 	db_query_tbl(dbType, db, table, start, limit);
+}
+
+function b64encode(str) {
+    var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    function utf16to8(str) { 
+        var out, i, len, c; 
+     
+        out = ""; 
+        len = str.length; 
+        for(i = 0; i < len; i++) { 
+            c = str.charCodeAt(i); 
+            if ((c >= 0x0001) && (c <= 0x007F)) { 
+                out += str.charAt(i); 
+            } else if (c > 0x07FF) { 
+                out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F)); 
+                out += String.fromCharCode(0x80 | ((c >>  6) & 0x3F)); 
+                out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F)); 
+            } else { 
+                out += String.fromCharCode(0xC0 | ((c >>  6) & 0x1F)); 
+                out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F)); 
+            } 
+        } 
+        return out; 
+    }
+    function base64encode(str) { 
+        var out, i, len; 
+        var c1, c2, c3; 
+     
+        len = str.length; 
+        i = 0; 
+        out = ""; 
+        while(i < len) { 
+            c1 = str.charCodeAt(i++) & 0xff; 
+            if(i == len) 
+            { 
+                out += base64EncodeChars.charAt(c1 >> 2); 
+                out += base64EncodeChars.charAt((c1 & 0x3) << 4); 
+                out += "=="; 
+                break; 
+            } 
+            c2 = str.charCodeAt(i++); 
+            if(i == len) 
+            { 
+                out += base64EncodeChars.charAt(c1 >> 2); 
+                out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4)); 
+                out += base64EncodeChars.charAt((c2 & 0xF) << 2); 
+                out += "="; 
+                break; 
+            } 
+            c3 = str.charCodeAt(i++); 
+            out += base64EncodeChars.charAt(c1 >> 2); 
+            out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4)); 
+            out += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >>6)); 
+            out += base64EncodeChars.charAt(c3 & 0x3F); 
+        } 
+        return out; 
+    }
+    return base64encode(utf16to8(str));
 }
