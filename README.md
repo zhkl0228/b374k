@@ -60,6 +60,7 @@ Coming soon
 ## Upgrade
 
  - 20160216 / Convert SQL to Base64 to Bypass WAF / @phith0n
+ - 20160216 / Ajax encrypt(RC4) channel / @phith0n
 
 ## Old Version :
 If your browser is not supported, or any other reason, you can view old version here

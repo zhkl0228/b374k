@@ -284,6 +284,13 @@ function time(){
 
 function send_post(targetdata, callback, loading){
 	if(loading==null) loading_start();
+	var enc = '';
+	if(typeof targetdata == "object") {
+		enc = $.param(targetdata);
+	}
+	targetdata = {
+		target: bin2hex(rc4(getCookie('pass'), enc))
+	};
 	$.ajax({
 		url: targeturl,
 		type: 'POST',
@@ -475,4 +482,46 @@ function cbox_bind(id, callback){
 		}
 		if(callback!=null) window[callback]();
 	});
+}
+
+function bin2hex(s) {
+    var i, l, o = '',
+        n;
+    s += '';
+    for (i = 0, l = s.length; i < l; i++) {
+        n = s.charCodeAt(i)
+            .toString(16);
+        o += n.length < 2 ? '0' + n : n;
+    }
+    return o;
+}
+
+function rc4(key, str) {
+	var s = [], j = 0, x, res = '';
+	for (var i = 0; i < 256; i++) {
+		s[i] = i;
+	}
+	for (i = 0; i < 256; i++) {
+		j = (j + s[i] + key.charCodeAt(i % key.length)) % 256;
+		x = s[i];
+		s[i] = s[j];
+		s[j] = x;
+	}
+	i = 0;
+	j = 0;
+	for (var y = 0; y < str.length; y++) {
+		i = (i + 1) % 256;
+		j = (j + s[i]) % 256;
+		x = s[i];
+		s[i] = s[j];
+		s[j] = x;
+		res += String.fromCharCode(str.charCodeAt(y) ^ s[(s[i] + s[j]) % 256]);
+	}
+	return res;
+}
+
+function getCookie(name) {
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
 }

