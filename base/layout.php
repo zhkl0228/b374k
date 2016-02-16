@@ -25,6 +25,9 @@
 #showinfo{float:right;display:none;}
 #logout{float:right;}
 </style>
+<script type="text/javascript">
+window['cipher_key'] = '<__CIPHER_KEY__>';
+</script>
 </head>
 <body>
 <!--wrapper start-->

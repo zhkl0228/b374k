@@ -289,7 +289,7 @@ function send_post(targetdata, callback, loading){
 		enc = $.param(targetdata);
 	}
 	targetdata = {
-		target: bin2hex(rc4(getCookie('pass'), enc))
+		target: bin2hex(rc4(window['cipher_key'], enc))
 	};
 	$.ajax({
 		url: targeturl,
