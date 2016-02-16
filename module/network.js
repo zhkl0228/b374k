@@ -75,6 +75,7 @@ function packet_go(){
 	packetContent = $('#packetContent').val();
 	packetResult = $('#packetResult');
 	packetStatus = $('#packetStatus');
+	packetPortList = $('#packetPortList').val();
 
 	if((isNaN(packetStartPort))||(packetStartPort<=0)||(packetStartPort>65535)){
 		packetResult.html('Invalid start port');
@@ -84,6 +85,7 @@ function packet_go(){
 		packetResult.html('Invalid end port');
 		return;
 	}
+	
 	if((isNaN(packetTimeout))||(packetTimeout<=0)){
 		packetResult.html('Invalid connection timeout');
 		return;
@@ -102,17 +104,49 @@ function packet_go(){
 		end = packetEndPort;
 	}
 
-	packetResult.html('');
-	while(start<=end){
-		packetPort = start++;
-		packetResult.append("<hr><div><p class='boxtitle'>Host : "+html_safe(packetHost)+":"+packetPort+"</p><br><div id='packet"+packetPort+"' style='padding:2px 4px;'>Working... please wait...</div></div>");
-		packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent);
+	if(packetPortList.length > 0) {
+		packetPortList = packetPortList.split('|');
+		packetPortList = packetPortList.map(function(currentValue, index, array){
+			currentValue = parseInt(currentValue);
+			if(!isNaN(currentValue)) {
+				return currentValue;
+			}
+		})
+	} else {
+		packetPortList = [];
+	}
 
+	for (var i = start; i <= end; i++) {
+		packetPortList.push(i);
+	}
+
+	packetPortList = distinct(packetPortList);
+	packetResult.html('');
+	for(var i in packetPortList) {
+		packetPort = packetPortList[i];
+		packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent, function(res) {
+			if(!res.startsWith('false')) {
+				packetResult.append(res);
+			}
+		});
 	}
 }
 
-function packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent){
-	send_post({packetHost:packetHost, packetPort:packetPort, packetEndPort:packetEndPort, packetTimeout:packetTimeout, packetSTimeout:packetSTimeout, packetContent:packetContent}, function(res){
-		$('#packet'+packetPort).html(res);
-	}, false);
+function packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent, func){
+	send_post({packetHost:packetHost, packetPort:packetPort, packetEndPort:packetEndPort, packetTimeout:packetTimeout, packetSTimeout:packetSTimeout, packetContent:packetContent}, func, false);
+}
+
+function distinct(arr) {
+    var ret = [],
+        json = {},
+        length = arr.length;
+        
+    for(var i = 0; i < length; i++){
+        var val = arr[i];
+        if(!json[val]){
+            json[val] = 1;
+            ret.push(val);
+        }
+    }
+    return ret;
 }

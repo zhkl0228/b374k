@@ -1,5 +1,5 @@
 <?php
-$server_addr = isset($_SERVER['SERVER_ADDR'])? $_SERVER['SERVER_ADDR']:isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"]:"";
+$server_addr = isset($_SERVER['SERVER_ADDR'])? $_SERVER['SERVER_ADDR']:isset($_SERVER["SERVER_NAME"])?$_SERVER["SERVER_NAME"]:"";
 $remote_addr = isset($_SERVER['REMOTE_ADDR'])? $_SERVER['REMOTE_ADDR']:"";
 $default_port = 13123;
 $winbinary = (strtolower(substr(php_uname(),0,3))=="win")? "<option>executable</option>":"";
@@ -67,6 +67,7 @@ $GLOBALS['module']['network']['content'] = "
 	<tr><td style='width:120px'>Host</td><td><input type='text' id='packetHost' value='tcp://".$server_addr."' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 	<tr><td>Start Port</td><td><input type='text' id='packetStartPort' value='80' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 	<tr><td>End Port</td><td><input type='text' id='packetEndPort' value='80' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
+	<tr><td>Port List</td><td><input type='text' id='packetPortList' value='21|22|23|25|53|80|110|135|139|443|445|1433|3306|3389|6379|8080|11211|27017|43958' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 	<tr><td>Connection Timeout</td><td><input type='text' id='packetTimeout' value='5' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 	<tr><td>Stream Timeout</td><td><input type='text' id='packetSTimeout' value='5' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 </tbody>
@@ -127,8 +128,7 @@ elseif(isset($p['packetTimeout'])&&isset($p['packetSTimeout'])&&isset($p['packet
 
 	$sock = fsockopen($packetHost, $packetPort, $errNo, $errStr, $packetTimeout);
 	if(!$sock){
-		$res .= "<div class='weak'>";
-		$res .= html_safe(trim($errStr))." (error ".html_safe(trim($errNo)).")</div>";
+		$res .= "false " . html_safe(trim($errStr)) . " (error ".html_safe(trim($errNo)).")";
 	}
 	else{
 		stream_set_timeout($sock, $packetSTimeout);
@@ -142,8 +142,10 @@ elseif(isset($p['packetTimeout'])&&isset($p['packetSTimeout'])&&isset($p['packet
 			$bin .= $line;
 		}while($counter<$maxtry);
 		fclose($sock);
+		$res .= "<hr><div><p class='boxtitle'>Host : ".html_safe($packetHost).":{$packetPort}</p><br><div id='packet{$packetPort}' style='padding:2px 4px;'>";
 		$res .= "<table class='boxtbl'><tr><td><textarea style='height:140px;min-height:140px;'>".html_safe($bin)."</textarea></td></tr>";
 		$res .= "<tr><td><textarea style='height:140px;min-height:140px;'>".bin2hex($bin)."</textarea></td></tr></table>";
+		$res .= "</div></div>";
 	}
 
 	output($res);
