@@ -1,67 +1,94 @@
-# b374k shell 3.2
-This PHP Shell is a useful tool for system or web administrator to do remote management without using cpanel, connecting using ssh, ftp etc. All actions take place within a web browser
+# b374k webshell 4.0
 
-Features : 
- * File manager (view, edit, rename, delete, upload, download, archiver, etc)
- * Search file, file content, folder (also using regex)
- * Command execution
- * Script execution (php, perl, python, ruby, java, node.js, c)
- * Give you shell via bind/reverse shell connect
- * Simple packet crafter
- * Connect to DBMS (mysql, mssql, oracle, sqlite, postgresql, and many more using ODBC or PDO)
- * SQL Explorer
- * Process list/Task manager
- * Send mail with attachment (you can attach local file on server)
- * String conversion
- * All of that only in 1 file, no installation needed
- * Support PHP > 4.3.3 and PHP 5
+b374k webshell是一个非常实用的web管理工具（后门），所有的管理操作都通过HTTP协议进行。
 
-## Requirements :
- * PHP version > 4.3.3 and PHP 5
- * As it using zepto.js v1.1.2, you need modern browser to use b374k shell. See browser support on zepto.js website http://zeptojs.com/
- * Responsibility of what you do with this shell
+## 特性 : 
+ * 文件管理 (查看、编辑、重命名、删除、上传、下载、打包、解压等)
+ * 搜索文件夹、文件、文件内容 (支持正则)
+ * 命令执行
+ * 脚本执行 (php, perl, python, ruby, java, node.js, c)
+ * 支持正向/反向 shell
+ * 内附简单的法宝功能（内网探测神器）
+ * 多个数据库支持 (mysql, mssql, oracle, sqlite, postgresql 等 ODBC、 PDO 支持的数据库)
+ * SQL可视化浏览器
+ * 进程管理器（可列出/杀死）
+ * 支持附件的邮件发送功能 (你可以将服务器上的文件作为附件发送)
+ * 字符串转换功能
+ * 所有的功能都继承于一个文件，无需安装
+ * 通信过程简单加密，虽不能保证通信内容不被窃听，但可以绕过一些自动化WAF的检测
+ * 支持 PHP > 4.3.3 || PHP 5
+
+## 需求 :
+ * PHP version > 4.3.3 || PHP 5
+ * 为了支持zepto.js v1.1.2，你需要使用现代浏览器访问b374k。你可以在官网查看 zepto.js 支持的浏览器： http://zeptojs.com/
+ * 其他需求取决于你要用这个shell做什么事情
  
-## Installation :
-Download b374k.php (default password : b374k), edit and change password and upload b374k.php to your server, password is in sha1(md5()) format. Or create your own b374k.php, explained below
+## 安装 :
 
-## Customize :
-After finished doing editing with files, upload index.php, base, module, theme and all files inside it to a server
+b374k shell是一个可装卸的模块化webshell，你需要进行一些简单的配置，才可以生成webshell文件。
 
-Using Web Browser :
+下载b374k项目，你可以在命令行下运行index.php，查看其帮助文档：
 
-Open index.php in your browser, quick run will only run the shell. Use packer to pack all files into single PHP file. Set all the options available and the output file will be in the same directory as index.php
+```
+git clone https://github.com/phith0n/b374k.git
+cd b374k
+php -f index.php -- --help
+```
 
-Using Console :
+命令行参数说明：
+
 ```
 $ php -f index.php
 b374k shell packer 0.4
 
 options :
-        -o filename                             save as filename
-        -p password                             protect with password
-        -t theme                                theme to use
-        -m modules                              modules to pack separated by comma
-        -s                                      strip comments and whitespaces
-        -b                                      encode with base64
-        -z [no|gzdeflate|gzencode|gzcompress]   compression (use only with -b)
-        -c [0-9]                                level of compression
-        -l                                      list available modules
-        -k                                      list available themes
+        -o filename                             指定生成文件名
+        -p password                             指定webshell密码
+        -t theme                                指定皮肤
+        -m modules                              指定模块，多个模块间用英文逗号分隔
+        -s                                      是否清楚空白字符和注释
+        -b                                      是否使用base64编码
+        -z [no|gzdeflate|gzencode|gzcompress|rc4]   使用哪个压缩方式（需要开启 -b）
+        -c [0-9]                                压缩等级
+        -l                                      列出所有可用的模块
+        -k                                      列出所有可用的皮肤
 ```
-example :
+
+例子：
+
 ```
-$ php -f index.php -- -o myShell.php -p myPassword -s -b -z gzcompress -c 9
+php -f index.php -- -o myShell.php -p myPassword -s -b -z gzcompress -c 9
 ```
-Don't forget to delete index.php, base, module, theme and all files inside it after you finished. Because it is not protected with password so it can be a security threat to your server
 
-## Documentation :
-Coming soon
+或者，你可以直接从浏览器访问index.php，使用图形化界面生成你的webshell：
 
-## Upgrade
+![](http://7xkhqo.com1.z0.glb.clouddn.com/2016-02-16-14556165692049.jpg)
 
- - 20160216 / Convert SQL to Base64 to Bypass WAF / @phith0n
- - 20160216 / Ajax encrypt(RC4) channel / @phith0n
+请不要在生成环境使用这个webshell，使用完成后删除所有文件。因为该webshell是一个后门，所以并没有安全防范措施。（特别是index.php，不要让他人访问到了，切记）
 
-## Old Version :
-If your browser is not supported, or any other reason, you can view old version here
+### 使用RC4加密webshell
+
+如果你使用了RC4加密方法（-z rc4），那么在生成webshell的时候，请记下RC4 Cipher Key：
+
+![](http://7xkhqo.com1.z0.glb.clouddn.com/2016-02-16-14556170735375.jpg)
+
+在访问该shell的时候需要带上RC4-KEY头：
+
+![](http://7xkhqo.com1.z0.glb.clouddn.com/2016-02-16-14556171853058.jpg)
+
+否则将无法正常访问该shell。
+
+## 开发文档 :
+无
+
+## 升级日志
+
+ - 20160216 / Ajax通信使用RC4加密通道，避免受到WAF影响 / @phith0n
+ - 20160216 / 压缩方法中加入RC4，可防止他人分析webshell / @phith0n
+
+## 老版本
+
+https://github.com/b374k/b374k
 https://code.google.com/p/b374k-shell/
+
+
