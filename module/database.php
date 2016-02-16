@@ -333,6 +333,8 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 						}
 					}
 				}
+			} else {
+				$res = '<p>Execute SQL Query</p>';
 			}
 		}
 	}
