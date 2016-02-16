@@ -5,6 +5,10 @@
 	(c)2014
 	https://github.com/b374k/b374k
 
+	Version 4.0
+	@phith0n
+	https://github.com/phith0n/b374k
+
 */
 $GLOBALS['packer']['title'] = "b374k shell packer";
 $GLOBALS['packer']['version'] = "0.4.2";
