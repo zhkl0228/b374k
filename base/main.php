@@ -218,7 +218,7 @@ if(!function_exists('execute')){
 
 if(!function_exists('html_safe')){
 	function html_safe($str){
-		return htmlspecialchars($str, 2 | 1);
+		return htmlspecialchars($str, 2 | 1, 'ISO-8859-1');
 	}
 }
 
