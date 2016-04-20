@@ -1,4 +1,4 @@
-# b374k webshell 4.0
+# b374k webshell 4.1
 
 b374k webshell是一个非常实用的web管理工具（后门），所有的管理操作都通过HTTP协议进行。
 
@@ -17,6 +17,7 @@ b374k webshell是一个非常实用的web管理工具（后门），所有的管
  * 所有的功能都继承于一个文件，无需安装
  * 通信过程简单加密，虽不能保证通信内容不被窃听，但可以绕过一些自动化WAF的检测
  * 支持 PHP > 4.3.3 || PHP 5
+ * 支持手工指定编码，防止多语言下的乱码问题
 
 ## 需求 :
  * PHP version > 4.3.3 || PHP 5
@@ -52,6 +53,7 @@ options :
         -c [0-9]                                压缩等级
         -l                                      列出所有可用的模块
         -k                                      列出所有可用的皮肤
+        -u code                                 指定目标系统编码，如gb2312/utf-8等，默认utf-8
 ```
 
 例子：
@@ -85,6 +87,7 @@ php -f index.php -- -o myShell.php -p myPassword -s -b -z gzcompress -c 9
 
  - 20160216 / Ajax通信使用RC4加密通道，避免受到WAF影响 / @phith0n
  - 20160216 / 压缩方法中加入RC4，可防止他人分析webshell / @phith0n
+ - 20160420 / 增加编码选项，以后中文再也不会乱码啦~ / @phith0n
 
 ## 老版本 :
 

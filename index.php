@@ -5,7 +5,7 @@
 	(c)2014
 	https://github.com/b374k/b374k
 
-	Version 4.0
+	Version 4.1
 	@phith0n
 	https://github.com/phith0n/b374k
 
