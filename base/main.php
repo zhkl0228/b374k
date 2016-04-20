@@ -993,7 +993,7 @@ if(!function_exists('output')){
 		header("Content-Type: text/plain");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		echo isset($GLOBALS['encode']) ? convert_encode($GLOBALS['encode'], 'utf-8', $str) : $str;
+		echo (isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8') ? convert_encode($GLOBALS['encode'], 'utf-8', $str) : $str;
 		die();
 	}
 }
