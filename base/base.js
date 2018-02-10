@@ -43,7 +43,7 @@ function view(path, type, preserveTimestamp){
 					editResult.html(' ( File saved )');
 				}
 				else if(editSuccess=='error'){
-					editResult.html(' ( Failed to save file )');
+					editResult.html(' ( <span style="color: red;">Failed to save file</span> )');
 				}
 				editSuccess = '';
 			}
@@ -382,11 +382,13 @@ function edit_save(editType){
 	if($('.cBox').hasClass('cBoxSelected')) preserveTimestamp = 'true';
 	send_post({editType:editType,editFilename:editFilename,editInput:editInput,preserveTimestamp:preserveTimestamp},
 		function(res){
-		if(res!='error'){
-			editSuccess = 'success';
-			view(editFilename, editType, preserveTimestamp);
-		}
-		else editSuccess = 'error';
+			if(res!='error'){
+				editSuccess = 'success';
+				view(editFilename, editType, preserveTimestamp);
+			} else {
+				editSuccess = 'error';
+                view(editFilename, editType, preserveTimestamp);
+            }
 		}
 	);
 }
