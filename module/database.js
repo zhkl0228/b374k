@@ -108,7 +108,7 @@ function db_connect(){
 			$('#dbBottom').show();
 			db_nav_bind();
 		}
-		else $('.dbError').html('Unable to connect');
+		else $('.dbError').html('<span style="color: red;">Unable to connect</span>');
 	});
 }
 

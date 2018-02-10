@@ -279,6 +279,18 @@ function ul_add_url(path){
 }
 
 function ul_start(formData, ulType, i){
+	if(ulType == 'url') {
+		send_post(formData, function(res) {
+            if(res=='error'){
+                $('.ulProgress'+ulType+i).html('( <span style="color: red;">failed</span> )');
+            }
+            else{
+                $('.ulRes'+ulType+i).html(res);
+            }
+		});
+		return;
+	}
+
 	loading_start();
 	$.ajax({
 		url: targeturl,
@@ -298,12 +310,16 @@ function ul_start(formData, ulType, i){
 			return myXhr;
 		},
 		success: function(res){
+            res = rc4(window['cipher_key'], hex2bin(res));
+            try {
+                res = decodeURIComponent(escape(res));
+            } catch(e) {}
 			if(res.match(/Warning.*POST.*Content-Length.*of.*bytes.*exceeds.*the.*limit.*of/)){
 				res = 'error';
 			}
 
 			if(res=='error'){
-				$('.ulProgress'+ulType+i).html('( failed )');
+				$('.ulProgress'+ulType+i).html('( <span style="color: red;">failed</span> )');
 			}
 			else{
 				$('.ulRes'+ulType+i).html(res);
@@ -332,11 +348,21 @@ function ul_go(ulType){
 			ulSaveTo = (ulType=='comp')? $('.ulSaveToComp')[i].value:$('.ulSaveToUrl')[i].value;
 			ulFilename = (ulType=='comp')? $('.ulFilenameComp')[i].value:$('.ulFilenameUrl')[i].value;
 
-			var formData = new FormData();
-			formData.append('ulFile', file);
-			formData.append('ulSaveTo', ulSaveTo);
-			formData.append('ulFilename', ulFilename);
-			formData.append('ulType', ulType);
+			var formData = null;
+			if(ulType == 'comp') {
+                formData = new FormData();
+                formData.append('ulFile', file);
+                formData.append('ulSaveTo', ulSaveTo);
+                formData.append('ulFilename', ulFilename);
+                formData.append('ulType', ulType);
+			} else {
+                formData = {
+                    ulFile: file,
+                    ulSaveTo: ulSaveTo,
+                    ulFilename: ulFilename,
+                    ulType: ulType
+				}
+			}
 
 			entry = "<p class='ulRes"+ulType+i+"'><span class='strong'>&gt;</span>&nbsp;<a onclick='view_entry(this);' class='ulFilename"+ulType+i+"'>"+filename+"</a>&nbsp;<span class='ulProgress"+ulType+i+"'></span></p>";
 			ulResult.append(entry);

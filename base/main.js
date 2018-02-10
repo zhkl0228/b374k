@@ -282,20 +282,26 @@ function time(){
 	return d.getTime();
 }
 
-function send_post(targetdata, callback, loading){
+function send_post(data, callback, loading){
 	if(loading==null) loading_start();
 	var enc = '';
-	if(typeof targetdata == "object") {
-		enc = $.param(targetdata);
+	if(typeof data == "object") {
+		enc = $.param(data);
 	}
-	targetdata = {
+    // console.log("b374k> data : " + enc);
+	data = {
 		args: bin2hex(rc4(window['cipher_key'], enc))
 	};
 	$.ajax({
 		url: targeturl,
 		type: 'POST',
-		data: targetdata,
+		data: data,
 		success: function(res){
+            res = rc4(window['cipher_key'], hex2bin(res));
+            try {
+                res = decodeURIComponent(escape(res));
+            } catch(e) {}
+            // console.log("b374k> callback : " + res);
 			callback(res);
 			if(loading==null) loading_stop();
 		},
@@ -494,6 +500,14 @@ function bin2hex(s) {
         o += n.length < 2 ? '0' + n : n;
     }
     return o;
+}
+
+function hex2bin(s) {
+    var i = 0, len = s.length, result = "";
+    for(; i < len; i+=2) {
+        result += '%' + s.substr(i, 2);
+    }
+    return unescape(result);
 }
 
 function rc4(key, str) {
