@@ -990,7 +990,7 @@ if(!function_exists('output')){
 	function output($str){
 		$error = @ob_get_contents();
 		@ob_end_clean();
-		header("Content-Type: text/plain");
+		header("Content-Type: text/plain; charset=UTF-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
         if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {

