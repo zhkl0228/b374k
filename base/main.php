@@ -95,11 +95,11 @@ if(!function_exists('get_cwd')){
 	function get_cwd(){
 		$cwd = getcwd().DIRECTORY_SEPARATOR;
 		if(!isset($_COOKIE['cwd'])){
-			setcookie("cwd", bin2hex($cwd));
+			setcookie("cwd", encode_cwd($cwd));
 		}else{
-			$cwd_c = hex2bin(rawurldecode($_COOKIE['cwd']));
+			$cwd_c = rawurldecode(hex2bin($_COOKIE['cwd']));
 			if(is_dir($cwd_c)) $cwd = realpath($cwd_c).DIRECTORY_SEPARATOR;
-			else setcookie("cwd", bin2hex($cwd));
+			else setcookie("cwd", encode_cwd($cwd));
 		}
 		return $cwd;
 	}

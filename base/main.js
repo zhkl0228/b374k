@@ -241,11 +241,13 @@ function start_scroll(str){
 }
 
 function get_cwd(){
-	return hex2bin(get_cookie('cwd'));
-    /*try {
+	var cwd = hex2bin(get_cookie('cwd'));
+	try {
         cwd = decodeURIComponent(escape(cwd));
-    } catch(e) {}
-    return cwd;*/
+	} catch(e) {
+		output("decode cwd failed: " + e);
+	}
+	return cwd;
 }
 
 function fix_tabchar(el, e){
@@ -304,8 +306,10 @@ function send_post(data, callback, loading){
             res = rc4(window['cipher_key'], hex2bin(res));
             try {
                 res = decodeURIComponent(escape(res));
-            } catch(e) {}
-            output("callback : " + res);
+            } catch(e) {
+            	output("decode callback failed : " + res);
+			}
+            // output("callback : " + res);
 			callback(res);
 			if(loading==null) loading_stop();
 		},

