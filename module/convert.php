@@ -21,13 +21,16 @@ if(!function_exists('decode')){
 		$length = (int) strlen($str);
 
 		$res .= decode_line("md5", md5($str), "input");
+        $res .= decode_line("md5(md5)", md5(md5($str)), "input");
 		$res .= decode_line("sha1", sha1($str), "input");
+        $res .= decode_line("sha1(sha1)", sha1(sha1($str)), "input");
 
 		$res .= decode_line("base64 encode", base64_encode($str), "textarea");
-		$res .= decode_line("base64 decode", base64_decode($str), "textarea");
+		$base64_decoded = base64_decode($str);
+		$res .= decode_line("base64 decode", $base64_decoded.' => '.bin2hex($base64_decoded), "textarea");
 
-
-		$res .= decode_line("hex to string", @pack("H*" , $str), "textarea");
+		$hex_string = @pack("H*" , $str);
+		$res .= decode_line("hex to string", $hex_string.' => '.bin2hex($hex_string), "textarea");
 		$res .= decode_line("string to hex", bin2hex($str), "textarea");
 
 		$ascii = "";
