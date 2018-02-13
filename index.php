@@ -330,7 +330,7 @@ else{
 
 		$strip = isset($opt['s'])? "yes":"no";
 		$base64 = isset($opt['b'])? "yes":"no";
-		$encode = isset($opt['u'])? addslashes($opt['u']):"utf-8";
+		$encode = isset($opt['u'])? addslashes(strtolower($opt['u'])):"utf-8";
 
 		$compress = isset($opt['z'])? trim($opt['z']):"no";
 		if(!in_array($compress, array('gzdeflate','gzencode','gzcompress','rc4','no'))){

