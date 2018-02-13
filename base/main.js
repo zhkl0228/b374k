@@ -243,7 +243,7 @@ function start_scroll(str){
 function get_cwd(){
 	var cwd = hex2bin(get_cookie('cwd'));
 	try {
-        cwd = decodeURIComponent(cwd);
+        cwd = decodeURIComponent(escape(cwd));
 	} catch(e) {
 		output("decode cwd failed: " + e);
 	}

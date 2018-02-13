@@ -22,7 +22,7 @@ function encode_cwd($cwd) {
     if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
         $cwd = convert_encode($GLOBALS['encode'], 'utf-8', $cwd);
     }
-    return bin2hex(encodeURIComponent($cwd));
+    return bin2hex($cwd);
 }
 
 $explorer_content = "";

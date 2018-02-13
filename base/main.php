@@ -1055,10 +1055,4 @@ if(!function_exists('rc4')) {
 		return $res;
 	}
 }
-
-if(!function_exists('encodeURIComponent')) {
-    function encodeURIComponent($s) {
-        return strtr(rawurlencode($s), array());
-    }
-}
 ?>
