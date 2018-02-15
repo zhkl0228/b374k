@@ -872,7 +872,7 @@ if(!function_exists('eval_go')){
 				if(write_file($path, $evalCode)){
 					$res .= " (ok)\n";
 					$ext = (is_win())? ".exe":".out";
-					$pathres = $filename.$ext;
+					$pathres = $tmpdir.$filename.$ext;
 					$evalOptions = "-o ".$pathres." ".$evalOptions;
 					$cmd = "gcc ".$evalOptions.$path;
 					$res .= "Compiling : ".$cmd;

@@ -776,8 +776,7 @@ function eval_go(){
 				if(res!='error'){
 					splits = res.split('{[|b374k|]}');
 					if(splits.length==2){
-						output = splits[0]+"<hr>"+splits[1];
-						$('#evalOutput').html(output);
+						$('#evalOutput').html(splits[0]+"<hr>"+splits[1]);
 					}
 					else{
 						$('#evalOutput').html(res);
