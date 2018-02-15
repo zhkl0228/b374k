@@ -310,23 +310,23 @@ function send_post(data, callback, loading){
             	output("decode callback failed : " + res);
 			}
             // output("callback : " + res);
-			var index = res.indexOf('|');
+            var index = res.indexOf('|');
             if(index !== -1) {
                 document.getElementById('server_date').innerHTML = res.substring(0, index);
-            	res = res.substring(index + 1);
-			}
+                res = res.substring(index + 1);
+            }
             index = res.indexOf('|');
             if(index !== -1) {
-            	var clientIp = res.substring(0, index);
+                var clientIp = res.substring(0, index);
                 document.getElementById('client_ip').innerHTML = clientIp;
                 var backAddr = document.getElementById('backAddr');
                 if(backAddr != null) {
                     backAddr.value = clientIp;
-				}
+                }
                 res = res.substring(index + 1);
             }
-			callback(res);
-			if(loading==null) loading_stop();
+            callback(res);
+            if(loading==null) loading_stop();
 		},
 		error: function(){ if(loading==null) loading_stop(); }
 	});

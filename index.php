@@ -279,6 +279,7 @@ else{
 
 	if(count($argv)<=1){
 		$output .= "options :\n";
+        $output .= "\t-d\t\t\t\t\tdebug mode\n";
 		$output .= "\t-o filename\t\t\t\tsave as filename\n";
 		$output .= "\t-p password\t\t\t\tprotect with password\n";
 		$output .= "\t-t theme\t\t\t\ttheme to use\n";
@@ -292,7 +293,11 @@ else{
 		$output .= "\t-u code\t\t\t\t\tsystem language encode, such as utf-8/gb2312/gbk..\n";
 	}
 	else{
-		$opt = getopt("o:p:t:m:sbz:c:lku:");
+		$opt = getopt("do:p:t:m:sbz:c:lku:");
+
+        if (isset($opt['d'])) {
+            $GLOBALS['cipher_key'] = 'QtIRzust76zO1haRabFYkbBv9WDnGvTx';
+        }
 
 		if(isset($opt['l'])){
 			$output .= "available modules : ".implode(",", $GLOBALS['packer']['module'])."\n\n";
