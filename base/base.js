@@ -59,6 +59,16 @@ function view(path, type, preserveTimestamp){
 					var editInput = $('#editInput');
                     // editInput.css("background-color", "gray");
                     editInput.attr("readonly", "readonly");
+                    var button = $('#editTbl').find('.button');
+                    button.removeAttr('onclick');
+                    button.off('click');
+                    button.on('click', function() {
+                        if(!writable) {
+                            editResult.html(' ( <span style="color: red;">Readonly file</span> )');
+                        } else {
+                            editResult.html(' ( <span style="color: red;">Decode content failed</span> )');
+						}
+					});
                 }
 			}
 			cbox_bind('editTbl');
