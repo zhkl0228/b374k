@@ -32,6 +32,14 @@ function navigate(path, showfiles){
 function view(path, type, preserveTimestamp){
 	if(preserveTimestamp==null) preserveTimestamp = 'true';
 	send_post({ viewFile: path, viewType: type, preserveTimestamp:preserveTimestamp }, function(res, decode_fail){
+        var index = res.indexOf('|');
+        var writable = true;
+        if(index !== -1) {
+            if(res.substring(0, index) !== "true") {
+                writable = false;
+            }
+            res = res.substring(index + 1);
+        }
 		if(res!='error'){
 			$('#explorer').html('');
 			$('#explorer').html(res);
@@ -47,9 +55,9 @@ function view(path, type, preserveTimestamp){
 				}
 				editSuccess = '';
 
-				if(decode_fail) {
+				if(decode_fail || !writable) {
 					var editInput = $('#editInput');
-                    editInput.css("background-color", "gray");
+                    // editInput.css("background-color", "gray");
                     editInput.attr("readonly", "readonly");
                 }
 			}

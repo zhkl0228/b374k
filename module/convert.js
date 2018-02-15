@@ -15,7 +15,7 @@ function decode_go(){
             result.html('');
             result.html(res);
             if(decode_fail) {
-                result.find('input,textarea').css("background-color", "gray");
+                // result.find('input,textarea').css("background-color", "gray");
                 result.find('input,textarea').attr("readonly", "readonly");
             }
 		}
