@@ -310,6 +310,11 @@ function send_post(data, callback, loading){
             	output("decode callback failed : " + res);
 			}
             // output("callback : " + res);
+			var index = res.indexOf('|');
+            if(index !== -1) {
+                document.getElementById('server_date').innerHTML = res.substring(0, index);
+            	res = res.substring(index + 1);
+			}
 			callback(res);
 			if(loading==null) loading_stop();
 		},

