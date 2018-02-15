@@ -315,6 +315,11 @@ function send_post(data, callback, loading){
                 document.getElementById('server_date').innerHTML = res.substring(0, index);
             	res = res.substring(index + 1);
 			}
+            index = res.indexOf('|');
+            if(index !== -1) {
+                document.getElementById('client_ip').innerHTML = res.substring(0, index);
+                res = res.substring(index + 1);
+            }
 			callback(res);
 			if(loading==null) loading_stop();
 		},
