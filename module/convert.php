@@ -24,6 +24,7 @@ if(!function_exists('decode')){
         $res .= decode_line("md5(md5)", md5(md5($str)), "input");
 		$res .= decode_line("sha1", sha1($str), "input");
         $res .= decode_line("sha1(sha1)", sha1(sha1($str)), "input");
+        $res .= decode_line("mysql5", sha1(sha1($str, true)), "input");
 
 		$res .= decode_line("base64 encode", base64_encode($str), "textarea");
 		$base64_decoded = base64_decode($str);
