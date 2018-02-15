@@ -317,7 +317,12 @@ function send_post(data, callback, loading){
 			}
             index = res.indexOf('|');
             if(index !== -1) {
-                document.getElementById('client_ip').innerHTML = res.substring(0, index);
+            	var clientIp = res.substring(0, index);
+                document.getElementById('client_ip').innerHTML = clientIp;
+                var backAddr = document.getElementById('backAddr');
+                if(backAddr != null) {
+                    backAddr.value = clientIp;
+				}
                 res = res.substring(index + 1);
             }
 			callback(res);
