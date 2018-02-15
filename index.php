@@ -279,7 +279,7 @@ else{
 
 	if(count($argv)<=1){
 		$output .= "options :\n";
-        $output .= "\t-d\t\t\t\t\tdebug mode\n";
+        $output .= "\t-d\t\t\t\t\tdev mode\n";
 		$output .= "\t-o filename\t\t\t\tsave as filename\n";
 		$output .= "\t-p password\t\t\t\tprotect with password\n";
 		$output .= "\t-t theme\t\t\t\ttheme to use\n";
