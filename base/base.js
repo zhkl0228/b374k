@@ -31,7 +31,7 @@ function navigate(path, showfiles){
 
 function view(path, type, preserveTimestamp){
 	if(preserveTimestamp==null) preserveTimestamp = 'true';
-	send_post({ viewFile: path, viewType: type, preserveTimestamp:preserveTimestamp }, function(res){
+	send_post({ viewFile: path, viewType: type, preserveTimestamp:preserveTimestamp }, function(res, decode_fail){
 		if(res!='error'){
 			$('#explorer').html('');
 			$('#explorer').html(res);
@@ -46,6 +46,12 @@ function view(path, type, preserveTimestamp){
 					editResult.html(' ( <span style="color: red;">Failed to save file</span> )');
 				}
 				editSuccess = '';
+
+				if(decode_fail) {
+					var editInput = $('#editInput');
+                    editInput.css("background-color", "gray");
+                    editInput.attr("readonly", "readonly");
+                }
 			}
 			cbox_bind('editTbl');
 		}
@@ -53,11 +59,13 @@ function view(path, type, preserveTimestamp){
 }
 
 function view_entry(el){
-	if($(el).attr('data-path')!=''){
-		entry = $(el).attr('data-path');
-		$('#form').append("<input type='hidden' name='viewEntry' value='"+entry+"'>");
-		$('#form').submit();
-		$('#form').html('');
+	var data_path = $(el).attr('data-path');
+	if(data_path!=''){
+		entry = data_path;
+		var form = $('#form');
+        form.append("<input type='hidden' name='viewEntry' value='"+entry+"'>");
+        form.submit();
+        form.html('');
 	}
 }
 
@@ -301,6 +309,20 @@ function ul_start(formData, ulType, i){
             try {
                 res = decodeURIComponent(escape(res));
             } catch(e) {}
+
+            var index = res.indexOf('|');
+            if(index !== -1) {
+                $('#server_date').html(res.substring(0, index));
+                res = res.substring(index + 1);
+            }
+            index = res.indexOf('|');
+            if(index !== -1) {
+                var clientIp = res.substring(0, index);
+                $('#client_ip').html(clientIp);
+                $('#backAddr').val(clientIp);
+                res = res.substring(index + 1);
+            }
+
 			if(res.match(/Warning.*POST.*Content-Length.*of.*bytes.*exceeds.*the.*limit.*of/)){
 				res = 'error';
 			}
@@ -709,6 +731,10 @@ function xpl_bind(){
 }
 
 function xpl_href(el){
+	var my = el.attr('data-path');
+	if(my != null) {
+		return my;
+    }
 	return el.parent().parent().attr('data-path');
 }
 

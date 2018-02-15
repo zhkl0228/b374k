@@ -24,10 +24,10 @@ if(!function_exists('decode')){
         $res .= decode_line("md5(md5)", md5(md5($str)), "input");
 		$res .= decode_line("sha1", sha1($str), "input");
         $res .= decode_line("sha1(sha1)", sha1(sha1($str)), "input");
-        $res .= decode_line("mysql", mysql_old_password_hash($str), "input");
-        $res .= decode_line("mysql5", '*'.strtoupper(sha1(sha1($str,TRUE))), "input");
         $res .= decode_line("md5(sha1)", md5(sha1($str)), "input");
         $res .= decode_line("sha1(md5)", sha1(md5($str)), "input");
+        $res .= decode_line("mysql", mysql_old_password_hash($str), "input");
+        $res .= decode_line("mysql5", '*'.strtoupper(sha1(sha1($str,TRUE))), "input");
 
 		$res .= decode_line("base64 encode", base64_encode($str), "textarea");
 		$base64_decoded = base64_decode($str);
@@ -86,22 +86,21 @@ if(!function_exists('decode_line')){
  **/
 if(!function_exists('mysql_old_password_hash')){
     function mysql_old_password_hash($input){
-        $nr = 1345345333;
+        $nr1 = 1345345333;
         $add = 7;
         $nr2 = 0x12345671;
-        $tmp = null;
         $inlen = strlen($input);
         for ($i = 0; $i < $inlen; $i++) {
             $byte = substr($input, $i, 1);
             if ($byte == ' ' || $byte == "\t") continue;
             $tmp = ord($byte);
-            $nr ^= ((($nr & 63) + $add) * $tmp) + (($nr << 8) & 0xFFFFFFFF);
-            $nr2 += (($nr2 << 8) & 0xFFFFFFFF) ^ $nr;
+            $nr1 ^= ((($nr1 & 63) + $add) * $tmp) + (($nr1 << 8) & 0xFFFFFFFF);
+            $nr2 += (($nr2 << 8) & 0xFFFFFFFF) ^ $nr1;
             $add += $tmp;
         }
-        $out_a = $nr & ((1 << 31) - 1);
-        $out_b = $nr2 & ((1 << 31) - 1);
-        return sprintf("%08x%08x", $out_a, $out_b);
+        $out1 = $nr1 & ((1 << 31) - 1);
+        $out2 = $nr2 & ((1 << 31) - 1);
+        return sprintf("%08x%08x", $out1, $out2);
     }
 }
 

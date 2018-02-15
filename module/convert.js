@@ -9,10 +9,15 @@ Zepto(function($){
 
 function decode_go(){
 	decodeStr = $('#decodeStr').val();
-	send_post({decodeStr:decodeStr}, function(res){
+	send_post({decodeStr:decodeStr}, function(res, decode_fail){
 		if(res!='error'){
-			$('#decodeResult').html('');
-			$('#decodeResult').html(res);
+			var result = $('#decodeResult');
+            result.html('');
+            result.html(res);
+            if(decode_fail) {
+                result.find('input,textarea').css("background-color", "gray");
+                result.find('input,textarea').attr("readonly", "readonly");
+            }
 		}
 	});
 }

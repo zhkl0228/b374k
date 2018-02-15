@@ -304,28 +304,28 @@ function send_post(data, callback, loading){
 		data: data,
 		success: function(res){
             res = rc4(window['cipher_key'], hex2bin(res));
+            var decode_fail;
             try {
                 res = decodeURIComponent(escape(res));
+                decode_fail = false;
             } catch(e) {
+                decode_fail = true;
             	output("decode callback failed : " + res);
 			}
             // output("callback : " + res);
             var index = res.indexOf('|');
             if(index !== -1) {
-                document.getElementById('server_date').innerHTML = res.substring(0, index);
+                $('#server_date').html(res.substring(0, index));
                 res = res.substring(index + 1);
             }
             index = res.indexOf('|');
             if(index !== -1) {
                 var clientIp = res.substring(0, index);
-                document.getElementById('client_ip').innerHTML = clientIp;
-                var backAddr = document.getElementById('backAddr');
-                if(backAddr != null) {
-                    backAddr.value = clientIp;
-                }
+                $('#client_ip').html(clientIp);
+                $('#backAddr').val(clientIp);
                 res = res.substring(index + 1);
             }
-            callback(res);
+            callback(res, decode_fail);
             if(loading==null) loading_stop();
 		},
 		error: function(){ if(loading==null) loading_stop(); }
