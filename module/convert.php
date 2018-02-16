@@ -30,10 +30,12 @@ if(!function_exists('decode')){
         $res .= decode_line("mysql", mysql_old_password_hash($str), "input");
         $res .= decode_line("mysql5", '*'.strtoupper(sha1(sha1($str,TRUE))), "input");
 
-        $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str), "input");
-        $res .= decode_line("MD5 (Apache servers standard)", cryptApr1Md5($str), "input");
         if(strlen($salt) > 0) {
-            $res .= decode_line("MD5 (Apache servers with salt)", cryptApr1Md5($str, $salt), "input");
+            $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str, $salt), "input");
+            $res .= decode_line("MD5 (Apache servers only)", cryptApr1Md5($str, $salt), "input");
+        } else {
+            $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str), "input");
+            $res .= decode_line("MD5 (Apache servers only)", cryptApr1Md5($str), "input");
         }
         $res .= decode_line("SHA-1 (Netscape-LDIF / Apache servers)", enctype_sha1($str), "input");
 
@@ -112,13 +114,13 @@ if(!function_exists('mysql_old_password_hash')){
 }
 
 if(!function_exists('enctype_crypt')){
-    function enctype_crypt($input){
+    function enctype_crypt($input, $extra_salt=null){
         if (strlen($input) > 8) {
             return 'Only the first 8 characters are taken into account when \'crypt\' algorithm is used.';
         }
         $chars     = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         $len       = strlen($chars) - 1;
-        $salt      = $chars[mt_rand(0, $len)] . $chars[mt_rand(0, $len)];
+        $salt      = $extra_salt == null ? ($chars[mt_rand(0, $len)] . $chars[mt_rand(0, $len)]) : $extra_salt;
         return crypt($input, $salt);
     }
 }
