@@ -29,6 +29,7 @@ if(!function_exists('decode')){
         $res .= decode_line("sha1(md5)", sha1(md5($str)), "input");
         $res .= decode_line("mysql", mysql_old_password_hash($str), "input");
         $res .= decode_line("mysql5", '*'.strtoupper(sha1(sha1($str,TRUE))), "input");
+        $res .= decode_line("ntlm", NTLMHash($str), "input");
 
         if(strlen($salt) < 1) {
             $salt = null;
@@ -166,6 +167,19 @@ if(!function_exists('enctype_sha1')){
     function enctype_sha1($input){
         $hash = base64_encode(sha1($input, true));
         return '{SHA}' . $hash;
+    }
+}
+
+if(!function_exists('NTLMHash')) {
+    function NTLMHash($Input){
+        // Convert the password from UTF8 to UTF16 (little endian)
+        $Input = iconv('UTF-8', 'UTF-16LE', $Input);
+
+        // Encrypt it with the MD4 hash
+        $MD4Hash = bin2hex(mhash(MHASH_MD4, $Input));
+
+        // Return the result
+        return ($MD4Hash);
     }
 }
 
