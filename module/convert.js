@@ -1,5 +1,5 @@
 Zepto(function($){
-	$('#decodeStr').on('keydown', function(e){
+	$('#decodeStr,#salt').on('keydown', function(e){
 		if(e.ctrlKey && (e.keyCode == 10 || e.keyCode == 13)){
 			decode_go();
 		}
@@ -8,8 +8,9 @@ Zepto(function($){
 });
 
 function decode_go(){
-	decodeStr = $('#decodeStr').val();
-	send_post({decodeStr:decodeStr}, function(res, decode_fail){
+	var decodeStr = $('#decodeStr').val();
+	var salt = $('#salt').val();
+	send_post({decodeStr:decodeStr,salt:salt}, function(res, decode_fail){
 		if(res!='error'){
 			var result = $('#decodeResult');
             result.html('');

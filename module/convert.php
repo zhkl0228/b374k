@@ -10,13 +10,14 @@ $GLOBALS['module']['convert']['content'] = "
 </thead>
 <tbody>
 	<tr><td colspan='2'><textarea style='height:140px;min-height:140px;' id='decodeStr'></textarea></td></tr>
+	<tr><td colspan='2'><input id='salt' placeholder='Salt (Optional)' /></td></tr>
 	<tr><td colspan='2'><span class='button' onclick='decode_go();'>convert</span></td></tr>
 </tbody>
 <tfoot id='decodeResult'><tr><td colspan='2'>You can also press ctrl+enter to submit</td></tr></tfoot>
 </table>";
 
 if(!function_exists('decode')){
-	function decode($str){
+	function decode($str, $salt){
 		$res = "";
 		$length = (int) strlen($str);
 
@@ -28,6 +29,13 @@ if(!function_exists('decode')){
         $res .= decode_line("sha1(md5)", sha1(md5($str)), "input");
         $res .= decode_line("mysql", mysql_old_password_hash($str), "input");
         $res .= decode_line("mysql5", '*'.strtoupper(sha1(sha1($str,TRUE))), "input");
+
+        $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str), "input");
+        $res .= decode_line("MD5 (Apache servers standard)", cryptApr1Md5($str), "input");
+        if(strlen($salt) > 0) {
+            $res .= decode_line("MD5 (Apache servers with salt)", cryptApr1Md5($str, $salt), "input");
+        }
+        $res .= decode_line("SHA-1 (Netscape-LDIF / Apache servers)", enctype_sha1($str), "input");
 
 		$res .= decode_line("base64 encode", base64_encode($str), "textarea");
 		$base64_decoded = base64_decode($str);
@@ -103,8 +111,63 @@ if(!function_exists('mysql_old_password_hash')){
     }
 }
 
+if(!function_exists('enctype_crypt')){
+    function enctype_crypt($input){
+        if (strlen($input) > 8) {
+            return 'Only the first 8 characters are taken into account when \'crypt\' algorithm is used.';
+        }
+        $chars     = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        $len       = strlen($chars) - 1;
+        $salt      = $chars[mt_rand(0, $len)] . $chars[mt_rand(0, $len)];
+        return crypt($input, $salt);
+    }
+}
+
+if(!function_exists('cryptApr1Md5')) {
+    function cryptApr1Md5($input, $extra_salt=null){
+        $salt = $extra_salt == null ? substr(str_shuffle("abcdefghijklmnopqrstuvwxyz0123456789"), 0, 8) : $extra_salt;
+        $len = strlen($input);
+        $text = $input . '$apr1$' . $salt;
+        $bin = pack("H32", md5($input . $salt . $input));
+        for ($i = $len; $i > 0; $i -= 16) {
+            $text .= substr($bin, 0, min(16, $i));
+        }
+        for ($i = $len; $i > 0; $i >>= 1) {
+            $text .= ($i & 1) ? chr(0) : $input{0};
+        }
+        $bin = pack("H32", md5($text));
+        for ($i = 0; $i < 1000; $i++) {
+            $new = ($i & 1) ? $input : $bin;
+            if ($i % 3) $new .= $salt;
+            if ($i % 7) $new .= $input;
+            $new .= ($i & 1) ? $bin : $input;
+            $bin = pack("H32", md5($new));
+        }
+        $tmp = '';
+        for ($i = 0; $i < 5; $i++) {
+            $k = $i + 6;
+            $j = $i + 12;
+            if ($j == 16) $j = 5;
+            $tmp = $bin[$i] . $bin[$k] . $bin[$j] . $tmp;
+        }
+        $tmp = chr(0) . chr(0) . $bin[11] . $tmp;
+        $tmp = strtr(strrev(substr(base64_encode($tmp), 2)),
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+            "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        return "$" . "apr1" . "$" . $salt . "$" . $tmp;
+    }
+}
+
+if(!function_exists('enctype_sha1')){
+    function enctype_sha1($input){
+        $hash = base64_encode(sha1($input, true));
+        return '{SHA}' . $hash;
+    }
+}
+
 if(isset($p['decodeStr'])){
 	$decodeStr = $p['decodeStr'];
-	output(decode($decodeStr));
+	$salt = $p['salt'];
+	output(decode($decodeStr, $salt));
 }
 ?>
