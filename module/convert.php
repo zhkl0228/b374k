@@ -173,10 +173,10 @@ if(!function_exists('enctype_sha1')){
 if(!function_exists('NTLMHash')) {
     function NTLMHash($Input){
         // Convert the password from UTF8 to UTF16 (little endian)
-        $Input = iconv('UTF-8', 'UTF-16LE', $Input);
+        $Input = convert_encode('UTF-8', 'UTF-16LE', $Input);
 
         // Encrypt it with the MD4 hash
-        $MD4Hash = bin2hex(mhash(MHASH_MD4, $Input));
+        $MD4Hash = function_exists('mhash') ? bin2hex(mhash(MHASH_MD4, $Input)) : hash('md4', $Input);
 
         // Return the result
         return ($MD4Hash);
