@@ -14,10 +14,20 @@ function decode_go(){
 			var result = $('#decodeResult');
             result.html('');
             result.html(res);
-            if(decode_fail) {
-                // result.find('input,textarea').css("background-color", "gray");
-                result.find('input,textarea').attr("readonly", "readonly");
-            }
+            result.find('input,textarea').each(function() {
+            	var encoded = $(this).attr('url-encoded');
+            	try {
+            		encoded = decodeURIComponent(encoded);
+				} catch(e) {}
+				if($(this).is('input')) {
+                    $(this).val(encoded);
+				} else {
+                    $(this).html(encoded);
+				}
+                if(decode_fail) {
+                    $(this).attr("readonly", "readonly");
+                }
+			});
 		}
 	});
 }

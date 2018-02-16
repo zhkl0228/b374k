@@ -31,10 +31,10 @@ if(!function_exists('decode')){
 
 		$res .= decode_line("base64 encode", base64_encode($str), "textarea");
 		$base64_decoded = base64_decode($str);
-		$res .= decode_line("base64 decode", $base64_decoded.' => '.bin2hex($base64_decoded), "textarea");
+		$res .= decode_line("base64 decode", $base64_decoded, "textarea");
 
 		$hex_string = @pack("H*" , $str);
-		$res .= decode_line("hex to string", $hex_string.' => '.bin2hex($hex_string), "textarea");
+		$res .= decode_line("hex to string", $hex_string, "textarea");
 		$res .= decode_line("string to hex", bin2hex($str), "textarea");
 
 		$ascii = "";
@@ -70,10 +70,9 @@ if(!function_exists('decode_line')){
 	function decode_line($type, $result, $inputtype){
 		$res = "<tr><td class='colFit'>".$type."</td><td>";
 		if($inputtype=='input'){
-			$res .= "<input type='text' value='".html_safe($result)."' ondblclick='this.select();'>";
-		}
-		else{
-			$res .= "<textarea style='height:80px;min-height:80px;' ondblclick='this.select();'>".html_safe($result)."</textarea>";
+			$res .= "<input type='text' url-encoded='".rawurlencode($result)."' ondblclick='this.select();'>";
+		}else{
+			$res .= "<textarea style='height:80px;min-height:80px;' url-encoded='".rawurlencode($result)."' ondblclick='this.select();'></textarea>";
 		}
 		return $res;
 	}

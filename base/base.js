@@ -41,8 +41,9 @@ function view(path, type, preserveTimestamp){
             res = res.substring(index + 1);
         }
 		if(res!='error'){
-			$('#explorer').html('');
-			$('#explorer').html(res);
+            var explorer = $('#explorer');
+            explorer.html('');
+            explorer.html(res);
 			xpl_bind();
 			show_tab('explorer');
 			if((type=='edit')||(type=='hex')){
