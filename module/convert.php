@@ -30,13 +30,12 @@ if(!function_exists('decode')){
         $res .= decode_line("mysql", mysql_old_password_hash($str), "input");
         $res .= decode_line("mysql5", '*'.strtoupper(sha1(sha1($str,TRUE))), "input");
 
-        if(strlen($salt) > 0) {
-            $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str, $salt), "input");
-            $res .= decode_line("MD5 (Apache servers only)", cryptApr1Md5($str, $salt), "input");
-        } else {
-            $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str), "input");
-            $res .= decode_line("MD5 (Apache servers only)", cryptApr1Md5($str), "input");
+        if(strlen($salt) < 1) {
+            $salt = null;
         }
+        $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str, $salt), "input");
+        $res .= decode_line("MD5 (Apache servers only)", cryptApr1Md5($str, $salt), "input");
+
         $res .= decode_line("SHA-1 (Netscape-LDIF / Apache servers)", enctype_sha1($str), "input");
 
 		$res .= decode_line("base64 encode", base64_encode($str), "textarea");
@@ -153,7 +152,10 @@ if(!function_exists('cryptApr1Md5')) {
             $tmp = $bin[$i] . $bin[$k] . $bin[$j] . $tmp;
         }
         $tmp = chr(0) . chr(0) . $bin[11] . $tmp;
-        $tmp = strtr(strrev(substr(base64_encode($tmp), 2)),
+        $tmp = base64_encode($tmp);
+        $tmp = substr($tmp, 2);
+        $tmp = strrev($tmp);
+        $tmp = strtr($tmp,
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
             "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
         return "$" . "apr1" . "$" . $salt . "$" . $tmp;
