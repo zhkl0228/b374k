@@ -376,6 +376,7 @@ else{
 		$module_init = "\n\$GLOBALS['module_to_load'] = array(".implode(", ", $module_arr).");";
 
 		$js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_main_code;
+        // $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."md5.js");
 		$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
 
 		foreach($modules as $module){

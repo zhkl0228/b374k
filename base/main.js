@@ -309,9 +309,9 @@ function send_post(data, callback, loading){
                 res = decodeURIComponent(escape(res));
                 decode_fail = false;
             } catch(e) {
-                decode_fail = true;
-            	output("decode callback failed : " + res);
+            	decode_fail = true;
 			}
+
             // output("callback : " + res);
             var index = res.indexOf('|');
             if(index !== -1) {

