@@ -68,8 +68,8 @@ $GLOBALS['module']['network']['content'] = "
 	<tr><td>Start Port</td><td><input type='text' id='packetStartPort' value='80' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 	<tr><td>End Port</td><td><input type='text' id='packetEndPort' value='80' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 	<tr><td>Port List</td><td><input type='text' id='packetPortList' value='21|22|23|25|53|80|110|135|139|443|445|1433|3306|3389|6379|8080|11211|27017|43958' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
-	<tr><td>Connection Timeout</td><td><input type='text' id='packetTimeout' value='5' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
-	<tr><td>Stream Timeout</td><td><input type='text' id='packetSTimeout' value='5' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
+	<tr><td>Connection Timeout</td><td><input type='text' id='packetTimeout' value='500' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
+	<tr><td>Stream Timeout</td><td><input type='text' id='packetSTimeout' value='500' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 </tbody>
 <tfoot>
 	<tr><td colspan='2'><textarea id='packetContent' style='height:140px;min-height:140px;'>GET / HTTP/1.1\\r\\nHost: ".$server_addr."\\r\\n\\r\\n</textarea></td></tr>
@@ -80,6 +80,7 @@ $GLOBALS['module']['network']['content'] = "
 		<td>You can also press ctrl+enter to submit</td>
 	</tr>
 	<tr><td colspan='2'><div id='packetResult'></div></td></tr>
+	<tr><td colspan='2'><div id='packetFailResult'></div></td></tr>
 </tfoot>
 </table>
 ";

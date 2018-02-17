@@ -75,6 +75,7 @@ function packet_go(){
     var packetSTimeout = parseInt($('#packetSTimeout').val());
     var packetContent = $('#packetContent').val();
     var packetResult = $('#packetResult');
+    var packetFailResult = $('#packetFailResult');
     // var packetStatus = $('#packetStatus');
     var packetPortList = $('#packetPortList').val();
 
@@ -100,56 +101,39 @@ function packet_go(){
 	if(packetStartPort>packetEndPort){
 		start = packetEndPort;
 		end = packetStartPort;
-	}
-	else{
+	}else{
 		start = packetStartPort;
 		end = packetEndPort;
 	}
 
+	var i;
+	var ports = [];
 	if(packetPortList.length > 0) {
 		packetPortList = packetPortList.split('|');
-		packetPortList = packetPortList.map(function(currentValue, index, array){
-			currentValue = parseInt(currentValue);
-			if(!isNaN(currentValue)) {
-				return currentValue;
-			}
-		})
-	} else {
-		packetPortList = [];
-	}
-
-	for (var i = start; i <= end; i++) {
-		packetPortList.push(i);
-	}
-
-	packetPortList = distinct(packetPortList);
-	packetResult.html('');
-	packetPortList.forEach(function (packetPort) {
-        packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent, function (res) {
-            if (!res.startsWith('false')) {
-                packetResult.append(res);
-            } else {
-                output(res);
+		for(i = 0; i < packetPortList.length; i++) {
+            var port = parseInt(packetPortList[i]);
+            if(!isNaN(port) && ports.indexOf(port) === -1) {
+                ports.push(port);
             }
-        });
-    });
-}
-
-function packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent, func){
-	send_post({packetHost:packetHost, packetPort:packetPort, packetEndPort:packetEndPort, packetTimeout:packetTimeout, packetSTimeout:packetSTimeout, packetContent:packetContent}, func, false);
-}
-
-function distinct(arr) {
-    var ret = [],
-        json = {},
-        length = arr.length;
-        
-    for(var i = 0; i < length; i++){
-        var val = arr[i];
-        if(!json[val]){
-            json[val] = 1;
-            ret.push(val);
         }
-    }
-    return ret;
+	}
+
+	for (i = start; i <= end; i++) {
+        if(ports.indexOf(i) === -1) {
+            ports.push(i);
+        }
+	}
+
+	packetResult.html('');
+    ports.sort(function (a, b) { return a-b; });
+    ports.forEach(function (packetPort) {
+        send_post({packetHost:packetHost, packetPort:packetPort, packetTimeout:packetTimeout, packetSTimeout:packetSTimeout, packetContent:packetContent}, function (res) {
+            if (res.startsWith('false|')) {
+                var msg = res.substring(6);
+                packetFailResult.append("<p style='color: red;'>" + msg + "</p>");
+            } else {
+                packetResult.append(res);
+            }
+        }, false);
+    });
 }
