@@ -72,7 +72,7 @@ $GLOBALS['module']['network']['content'] = "
 	<tr><td>Stream Timeout</td><td><input type='text' id='packetSTimeout' value='5' onkeydown=\"trap_enter(event, 'packet_go');\"></td></tr>
 </tbody>
 <tfoot>
-	<tr><td colspan='2'><textarea id='packetContent' style='height:140px;min-height:140px;'>GET / HTTP/1.1\\r\\n\\r\\n</textarea></td></tr>
+	<tr><td colspan='2'><textarea id='packetContent' style='height:140px;min-height:140px;'>GET / HTTP/1.1\\r\\nHost: ".$server_addr."\\r\\n\\r\\n</textarea></td></tr>
 	<tr>
 		<td>
 			<span class='button' onclick=\"packet_go();\" style='width:120px;'>run</span>
@@ -128,11 +128,13 @@ elseif(isset($p['packetTimeout'])&&isset($p['packetSTimeout'])&&isset($p['packet
 
 	$sock = fsockopen($packetHost, $packetPort, $errNo, $errStr, $packetTimeout);
 	if(!$sock){
-		$res .= "false " . html_safe(trim($errStr)) . " (error ".html_safe(trim($errNo)).")";
-	}
-	else{
+		$res .= "false|" . html_safe(trim($errStr)) . " (error ".html_safe(trim($errNo)).") on port: " . $packetPort;
+	}else{
 		stream_set_timeout($sock, $packetSTimeout);
-		fwrite($sock, $packetContent."\r\n\r\n\x00");
+        if($packetPort != 80 && $packetPort != 443 && $packetPort != 8080) {
+            $packetContent = $packetContent."\r\n\r\n\x00";
+        }
+		fwrite($sock, $packetContent);
 		$counter = 0;
 		$maxtry = 1;
 		$bin = "";

