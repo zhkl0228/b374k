@@ -1,6 +1,5 @@
 Zepto(function($){
 	rs_init();
-
 });
 
 function rs_init(){
@@ -57,8 +56,7 @@ function rs_go(rsType){
 					if(splits.length==2){
 						output = splits[0]+"<hr>"+splits[1];
 						rsResult.html(output);
-					}
-					else{
+					}else{
 						rsResult.html(res);
 					}
 				}
@@ -76,7 +74,6 @@ function packet_go(){
     var packetContent = $('#packetContent').val();
     var packetResult = $('#packetResult');
     var packetFailResult = $('#packetFailResult');
-    // var packetStatus = $('#packetStatus');
     var packetPortList = $('#packetPortList').val();
 
 	if((isNaN(packetStartPort))||(packetStartPort<=0)||(packetStartPort>65535)){
@@ -106,8 +103,7 @@ function packet_go(){
 		end = packetEndPort;
 	}
 
-	var i;
-	var ports = [];
+	var i, ports = [];
 	if(packetPortList.length > 0) {
 		packetPortList = packetPortList.split('|');
 		for(i = 0; i < packetPortList.length; i++) {
@@ -125,12 +121,12 @@ function packet_go(){
 	}
 
 	packetResult.html('');
+    packetFailResult.html('');
     ports.sort(function (a, b) { return a-b; });
     ports.forEach(function (packetPort) {
         send_post({packetHost:packetHost, packetPort:packetPort, packetTimeout:packetTimeout, packetSTimeout:packetSTimeout, packetContent:packetContent}, function (res) {
             if (res.startsWith('false|')) {
-                var msg = res.substring(6);
-                packetFailResult.append("<p style='color: red;'>" + msg + "</p>");
+                packetFailResult.append("<p style='color: red;'>" + res.substring(6) + "</p>");
             } else {
                 packetResult.append(res);
             }
