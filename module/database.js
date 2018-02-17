@@ -26,35 +26,37 @@ function db_init(){
 }
 
 function db_add_supported(){
-	splits = dbSupported.split(",");
+    var splits = dbSupported.split(",");
 	$.each(splits, function(i, k){
 		$('#dbType').append("<option>"+k+"</option>");
 	});
 }
 
+function change_db_type() {
+    var type = $('#dbType').val();
+    if((type=='odbc')||(type=='pdo')){
+        $('.dbHostLbl').html('DSN / Connection String');
+        $('.dbUserRow').show();
+        $('.dbPassRow').show();
+        $('.dbPortRow').hide();
+
+    }else if((type=='sqlite')||(type=='sqlite3')){
+        $('.dbHostLbl').html('DB File');
+        $('.dbUserRow').hide();
+        $('.dbPassRow').hide();
+        $('.dbPortRow').hide();
+
+    }else{
+        $('.dbHostLbl').html('Host');
+        $('.dbUserRow').show();
+        $('.dbPassRow').show();
+        $('.dbPortRow').show();
+    }
+}
+
 function db_bind(){
 	$('#dbType').on('change', function(e){
-		type = $('#dbType').val();
-		if((type=='odbc')||(type=='pdo')){
-			$('.dbHostLbl').html('DSN / Connection String');
-			$('.dbUserRow').show();
-			$('.dbPassRow').show();
-			$('.dbPortRow').hide();
-
-		}
-		else if((type=='sqlite')||(type=='sqlite3')){
-			$('.dbHostLbl').html('DB File');
-			$('.dbUserRow').hide();
-			$('.dbPassRow').hide();
-			$('.dbPortRow').hide();
-
-		}
-		else{
-			$('.dbHostLbl').html('Host');
-			$('.dbUserRow').show();
-			$('.dbPassRow').show();
-			$('.dbPortRow').show();
-		}
+		change_db_type();
 	});
 
 	$('#dbQuery').on('focus', function(e){
@@ -75,29 +77,35 @@ function db_bind(){
 }
 
 function db_nav_bind(){
-	dbType = $('#dbType').val();
-	$('.boxNav').off('click');
-	$('.boxNav').on('click', function(){
+    var dbType = $('#dbType').val();
+    var boxNav = $('.boxNav');
+    boxNav.off('click');
+    boxNav.on('click', function(){
 		$(this).next().toggle();
 	});
+    if(dbType==='sqlite'||dbType==='sqlite3'){
+        boxNav.click();
+    }
 
-	$('.dbTable').off('click');
-	$('.dbTable').on('click', function(){
-		type = $('#dbType').val();
-		table = $(this).html();
-		db = $(this).parent().parent().parent().prev().html();
+    var dbTable = $('.dbTable');
+    dbTable.off('click');
+    dbTable.on('click', function(){
+        var type = $('#dbType').val();
+        var table = $(this).html();
+        var db = $(this).parent().parent().parent().prev().html();
 		db_query_tbl(type, db, table, 0, dbPageLimit);
 	});
 }
 
 function db_connect(){
-	dbType = $('#dbType').val();
-	dbHost = $('#dbHost').val();
-	dbUser = $('#dbUser').val();
-	dbPass = $('#dbPass').val();
-	dbPort = $('#dbPort').val();
+    var dbType = $('#dbType').val();
+    var dbHost = $('#dbHost').val();
+    var dbUser = $('#dbUser').val();
+    var dbPass = $('#dbPass').val();
+    var dbPort = $('#dbPort').val();
 	send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort}, function(res){
 		if(res!='error'){
+            $('.dbError').html('');
 			$('#dbNav').html(res);
 			$('.dbHostRow').hide();
 			$('.dbUserRow').hide();
@@ -107,16 +115,16 @@ function db_connect(){
 			$('.dbQueryRow').show();
 			$('#dbBottom').show();
 			db_nav_bind();
-		}
-		else $('.dbError').html('<span style="color: red;">Unable to connect</span>');
+		}else $('.dbError').html('<span style="color: red;">Unable to connect</span>');
 	});
 }
 
 function db_disconnect(){
-	$('.dbHostRow').show();
-	$('.dbUserRow').show();
-	$('.dbPassRow').show();
-	$('.dbPortRow').show();
+    $('.dbHostRow').show();
+    $('.dbUserRow').show();
+    $('.dbPassRow').show();
+    $('.dbPortRow').show();
+	change_db_type();
 	$('.dbConnectRow').show();
 	$('.dbQueryRow').hide();
 	$('#dbNav').html('');
@@ -125,12 +133,12 @@ function db_disconnect(){
 }
 
 function db_run(){
-	dbType = $('#dbType').val();
-	dbHost = $('#dbHost').val();
-	dbUser = $('#dbUser').val();
-	dbPass = $('#dbPass').val();
-	dbPort = $('#dbPort').val();
-	dbQuery = $('#dbQuery').val();
+    var dbType = $('#dbType').val();
+    var dbHost = $('#dbHost').val();
+    var dbUser = $('#dbUser').val();
+    var dbPass = $('#dbPass').val();
+    var dbPort = $('#dbPort').val();
+    var dbQuery = $('#dbQuery').val();
 
 	if((dbQuery!='')&&(dbQuery!='You can also press ctrl+enter to submit')){
 		send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort, dbQuery:dbQuery}, function(res){
@@ -145,11 +153,11 @@ function db_run(){
 }
 
 function db_query_tbl(type, db, table, start, limit){
-	dbType = $('#dbType').val();
-	dbHost = $('#dbHost').val();
-	dbUser = $('#dbUser').val();
-	dbPass = $('#dbPass').val();
-	dbPort = $('#dbPort').val();
+    var dbType = $('#dbType').val();
+    var dbHost = $('#dbHost').val();
+    var dbUser = $('#dbUser').val();
+    var dbPass = $('#dbPass').val();
+    var dbPort = $('#dbPort').val();
 
 	send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort, dbQuery:'', dbDB:db, dbTable:table, dbStart:start, dbLimit:limit}, function(res){
 		if(res!='error'){
@@ -162,16 +170,15 @@ function db_query_tbl(type, db, table, start, limit){
 }
 
 function db_pagination(type){
-	db = $('#dbDB').val();
-	table = $('#dbTable').val();
-	start = parseInt($('#dbStart').val());
-	limit = parseInt($('#dbLimit').val());
-	dbType = $('#dbType').val();
+	var db = $('#dbDB').val();
+    var table = $('#dbTable').val();
+    var start = parseInt($('#dbStart').val());
+    var limit = parseInt($('#dbLimit').val());
+    var dbType = $('#dbType').val();
 
 	if(type=='next'){
 		start = start+limit;
-	}
-	else if(type=='prev'){
+	}else if(type=='prev'){
 		start = start-limit;
 		if(start<0) start = 0;
 	}

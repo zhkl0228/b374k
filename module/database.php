@@ -8,7 +8,7 @@ $GLOBALS['module']['database']['content'] = "
 	<tr><th colspan='3'><p class='boxtitle'>Connect</p></th></tr>
 </thead>
 <tbody>
-	<tr class='dbHostRow'><td style='width:144px' class='dbHostLbl'>Host</td><td colspan='2'><input type='text' id='dbHost' value='' onkeydown=\"trap_enter(event, 'db_connect');\"></td></tr>
+	<tr class='dbHostRow'><td style='width:144px' class='dbHostLbl'>Host</td><td colspan='2'><input type='text' id='dbHost' value='' ondblclick='this.select();' onkeydown=\"trap_enter(event, 'db_connect');\"></td></tr>
 	<tr class='dbUserRow'><td>Username</td><td colspan='2'><input type='text' id='dbUser' value='' onkeydown=\"trap_enter(event, 'db_connect');\"></td></tr>
 	<tr class='dbPassRow'><td>Password</td><td colspan='2'><input type='text' id='dbPass' value='' onkeydown=\"trap_enter(event, 'db_connect');\"></td></tr>
 	<tr class='dbPortRow'><td>Port (Optional)</td><td colspan='2'><input type='text' id='dbPort' value='' onkeydown=\"trap_enter(event, 'db_connect');\"></td></tr>
@@ -199,12 +199,10 @@ if(!function_exists('sql_close')){
 		if($sqltype == 'mysql'){
 			if(class_exists('mysqli')) return $con->close();
 			elseif(function_exists('mysql_close')) return mysql_close($con);
-		}
-		elseif($sqltype == 'mssql'){
+		}elseif($sqltype == 'mssql'){
 			if(function_exists('sqlsrv_close')) return sqlsrv_close($con);
 			elseif(function_exists('mssql_close')) return mssql_close($con);
-		}
-		elseif($sqltype == 'pgsql') return pg_close($con);
+		}elseif($sqltype == 'pgsql') return pg_close($con);
 		elseif($sqltype == 'oracle') return oci_close($con);
 		elseif($sqltype == 'sqlite3') return $con->close();
 		elseif($sqltype == 'sqlite') return sqlite_close($con);
