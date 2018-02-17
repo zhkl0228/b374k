@@ -153,13 +153,12 @@ function db_run(){
 }
 
 function db_query_tbl(type, db, table, start, limit){
-    var dbType = $('#dbType').val();
     var dbHost = $('#dbHost').val();
     var dbUser = $('#dbUser').val();
     var dbPass = $('#dbPass').val();
     var dbPort = $('#dbPort').val();
 
-	send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort, dbQuery:'', dbDB:db, dbTable:table, dbStart:start, dbLimit:limit}, function(res){
+	send_post({dbType:type, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort, dbQuery:'', dbDB:db, dbTable:table, dbStart:start, dbLimit:limit}, function(res){
 		if(res!='error'){
 			$('#dbResult').html(res);
 			$('.tblResult').each(function(){

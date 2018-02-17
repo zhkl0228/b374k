@@ -272,8 +272,9 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 				else $query = "";
 
 				$pagination = "Limit <input type='text' id='dbLimit' value='".html_safe($limit)."' style='width:50px;'>
-								<span class='button' onclick=\"db_pagination('prev');\">prev</span>
-								<span class='button' onclick=\"db_pagination('next');\">next</span>
+                                <span class='button' onclick=\"db_pagination('reload');\">reload</span>".
+                                ($start == 0 ? "" : "<span class='button' onclick=\"db_pagination('prev');\">prev</span>").
+								"<span class='button' onclick=\"db_pagination('next');\">next</span>
 								<input type='hidden' id='dbDB' value='".html_safe($db)."'>
 								<input type='hidden' id='dbTable' value='".html_safe($table)."'>
 								<input type='hidden' id='dbStart' value='".html_safe($start)."'>
