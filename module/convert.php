@@ -2,7 +2,7 @@
 $GLOBALS['module']['convert']['id'] = "convert";
 $GLOBALS['module']['convert']['title'] = "Convert";
 $GLOBALS['module']['convert']['js_ontabselected'] = "
-if((!portableMode) && ($('#decodeResult').children().length==1)) $('#decodeStr').focus();";
+if(!portableMode) $('#decodeStr').focus();";
 $GLOBALS['module']['convert']['content'] = "
 <table class='boxtbl'>
 <thead>

