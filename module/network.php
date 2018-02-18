@@ -48,7 +48,7 @@ $GLOBALS['module']['network']['content'] = "
 		</td>
 		<td><span class='button' onclick=\"rs_go('back');\" style='width:120px;'>run</span></td>
 	</tr>
-	<tr><td colspan='2'><pre id='backResult'>Run ' nc -l -v -p <span id='rs_port'>".$default_port."</span> ' on your computer and press ' run ' button</pre></td></tr>
+	<tr><td colspan='2'><pre id='backResult'>Run ' nc -l -v <span id='rs_port'>".$default_port."</span> ' on your computer and press ' run ' button</pre></td></tr>
 </tfoot>
 </table>
 <br>

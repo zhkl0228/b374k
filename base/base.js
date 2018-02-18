@@ -336,9 +336,7 @@ function ul_start(formData, ulType, i){
             }
             index = res.indexOf('|');
             if(index !== -1) {
-                var clientIp = res.substring(0, index);
-                $('#client_ip').html(clientIp);
-                $('#backAddr').val(clientIp);
+                $('#client_ip').html(res.substring(0, index));
                 res = res.substring(index + 1);
             }
 
