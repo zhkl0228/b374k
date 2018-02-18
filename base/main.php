@@ -730,13 +730,13 @@ if(!function_exists('show_all_files')){
             $ext = $info['extension'];
             if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico') {
                 $img = get_resource('png');
-            } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar') {
+            } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar'||$ext=='7z') {
                 $img = get_resource('zip');
             } elseif($ext=='xml'||$ext=='htm'||$ext=='xhtml'||$ext=='ftl'||$ext=='xsl') {
                 $img = get_resource('html');
             } elseif($ext=='bat'||$ext=='cmd') {
                 $img = get_resource('sh');
-            } elseif($ext=='so') {
+            } elseif($ext=='so'||$ext=='jnilib'||$ext=='dylib') {
                 $img = get_resource('dll');
             } else {
                 $img = get_resource($ext);
