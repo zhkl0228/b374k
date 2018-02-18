@@ -54,8 +54,7 @@ function rs_go(rsType){
 				if(res!='error'){
 					var splits = res.split('{[|b374k|]}');
 					if(splits.length==2){
-						output = splits[0]+"<hr>"+splits[1];
-						rsResult.html(output);
+						rsResult.html(splits[0]+"<hr>"+splits[1]);
 					}else{
 						rsResult.html(res);
 					}
