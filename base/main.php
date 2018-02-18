@@ -530,7 +530,6 @@ if(!function_exists('view_file')){
 			}
 			if($type=="auto"){
 				if(is_array($image_info)) $type = 'image';
-				//elseif(strtolower(substr($file,-3,3)) == "php") $type = "code";
 				elseif(!empty($mime)) $type = "multimedia";
 				else $type = "raw";
 			}
@@ -717,7 +716,7 @@ if(!function_exists('show_all_files')){
 			}
 			$output .= "
 	<tr data-path=\"".html_safe(realpath($d).DIRECTORY_SEPARATOR)."\"><td><div class='cBox".$cboxException."'></div></td>
-	<td style='white-space:normal;'><a class='navigate'>[ ".html_safe($d)." ]</a><span class='".$action." floatRight'>action</span></td>
+	<td style='white-space:normal;'><img src='".get_resource('dir')."'> <a class='navigate'>[ ".html_safe($d)." ]</a><span class='".$action." floatRight'>action</span></td>
 	<td>DIR</td>";
 			foreach($cols as $k=>$v){
 				$sortable = "";
@@ -727,9 +726,27 @@ if(!function_exists('show_all_files')){
 			$output .= "</tr>";
 		}
 		foreach($allfiles as $f){
+            $info = pathinfo($f);
+            $ext = $info['extension'];
+            if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico') {
+                $img = get_resource('png');
+            } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar') {
+                $img = get_resource('zip');
+            } elseif($ext=='xml'||$ext=='htm'||$ext=='xhtml'||$ext=='ftl'||$ext=='xsl') {
+                $img = get_resource('html');
+            } elseif($ext=='bat'||$ext=='cmd') {
+                $img = get_resource('sh');
+            } elseif($ext=='so') {
+                $img = get_resource('dll');
+            } else {
+                $img = get_resource($ext);
+            }
+            if(!$img) {
+                $img = get_resource('file');
+            }
 			$output .= "
 	<tr data-path=\"".html_safe(realpath($f))."\"><td><div class='cBox'></div></td>
-	<td style='white-space:normal;'><a class='view'>".html_safe($f)."</a><span class='action floatRight'>action</span></td>
+	<td style='white-space:normal;'><img src='".$img."'> <a class='view'>".html_safe($f)."</a><span class='action floatRight'>action</span></td>
 	<td title='".filesize($f)."'>".get_filesize($f)."</td>";
 			foreach($cols as $k=>$v){
 				$sortable = "";
