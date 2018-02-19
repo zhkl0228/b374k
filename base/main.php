@@ -813,6 +813,13 @@ if(!function_exists('eval_go')){
 
 		if($evalType=="php"){
 			ob_start();
+            $evalCode = trim($evalCode);
+            if (startsWith($evalCode, "<?php")) {
+                $evalCode = substr($evalCode, 5);
+            }
+            if (endsWith($evalCode, "?>")) {
+                $evalCode = substr($evalCode, 0, strlen($evalCode)-2);
+            }
 			eval($evalCode);
 			$res = ob_get_contents();
 			ob_end_clean();
