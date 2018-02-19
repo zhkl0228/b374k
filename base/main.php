@@ -588,7 +588,7 @@ if(!function_exists('view_file')){
 
 			$output .= "|
 	<table id='viewFile' class='boxtbl'>
-	<tr><td style='width:120px;'>Filename</td><td>".html_safe($file)."</td></tr>
+	<tr><td style='width:120px;'>Filename</td><td>".file_icon($file)." ".html_safe($file)."</td></tr>
     <tr><td>Hash</td><td>".md5_file($file)."</td></tr>
 	<tr><td>Size</td><td>".get_filesize($file)." (".filesize($file).")</td></tr>
 	".$owner."
@@ -726,27 +726,9 @@ if(!function_exists('show_all_files')){
 			$output .= "</tr>";
 		}
 		foreach($allfiles as $f){
-            $info = pathinfo($f);
-            $ext = $info['extension'];
-            if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico') {
-                $img = get_resource('png');
-            } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar'||$ext=='7z') {
-                $img = get_resource('zip');
-            } elseif($ext=='xml'||$ext=='htm'||$ext=='xhtml'||$ext=='ftl'||$ext=='xsl') {
-                $img = get_resource('html');
-            } elseif($ext=='bat'||$ext=='cmd') {
-                $img = get_resource('sh');
-            } elseif($ext=='so'||$ext=='jnilib'||$ext=='dylib') {
-                $img = get_resource('dll');
-            } else {
-                $img = get_resource($ext);
-            }
-            if(!$img) {
-                $img = get_resource('file');
-            }
 			$output .= "
 	<tr data-path=\"".html_safe(realpath($f))."\"><td><div class='cBox'></div></td>
-	<td style='white-space:normal;'><img src='".$img."'> <a class='view'>".html_safe($f)."</a><span class='action floatRight'>action</span></td>
+	<td style='white-space:normal;'>".file_icon($f)." <a class='view'>".html_safe($f)."</a><span class='action floatRight'>action</span></td>
 	<td title='".filesize($f)."'>".get_filesize($f)."</td>";
 			foreach($cols as $k=>$v){
 				$sortable = "";
@@ -1068,6 +1050,29 @@ if(!function_exists('endsWith')) {
     function endsWith($str, $needle){
         $length = strlen($needle);
         return $length === 0 || (substr($str, -$length) === $needle);
+    }
+}
+
+if(!function_exists('file_icon')) {
+    function file_icon($f){
+        $ext = pathinfo($f, PATHINFO_EXTENSION);
+        if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico') {
+            $img = get_resource('png');
+        } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar'||$ext=='7z') {
+            $img = get_resource('zip');
+        } elseif($ext=='xml'||$ext=='htm'||$ext=='xhtml'||$ext=='ftl'||$ext=='xsl') {
+            $img = get_resource('html');
+        } elseif($ext=='bat'||$ext=='cmd') {
+            $img = get_resource('sh');
+        } elseif($ext=='so'||$ext=='jnilib'||$ext=='dylib') {
+            $img = get_resource('dll');
+        } else {
+            $img = get_resource($ext);
+        }
+        if(!$img) {
+            $img = get_resource('file');
+        }
+        return "<img src='".$img."'>";
     }
 }
 ?>
