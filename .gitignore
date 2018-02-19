@@ -2,5 +2,6 @@
 t.php
 wp.php
 new.php
-*.zip
+wp.php.zip
 /b374k.iml
+.idea/
