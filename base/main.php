@@ -1,5 +1,5 @@
 <?php
-$GLOBALS['ver'] = "4.0.1";
+$GLOBALS['ver'] = "4.0.2";
 $GLOBALS['title'] = "a374k";
 
 @ob_start();
@@ -1055,9 +1055,7 @@ if(!function_exists('endsWith')) {
 
 if(!function_exists('file_icon')) {
     function file_icon($f=null){
-        if($f==null) {
-            $img = get_resource('dir');
-        } else {
+        if($f==null) $img = get_resource('dir'); else {
             $ext = pathinfo($f, PATHINFO_EXTENSION);
             if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico'||$ext=='png') {
                 $img = get_resource('img');

