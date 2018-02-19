@@ -197,17 +197,18 @@ if(!function_exists('sql_fetch_data')){
 if(!function_exists('sql_close')){
 	function sql_close($sqltype,$con){
 		if($sqltype == 'mysql'){
-			if(class_exists('mysqli')) return $con->close();
+			if(class_exists('mysqli')) $con->close();
 			elseif(function_exists('mysql_close')) return mysql_close($con);
 		}elseif($sqltype == 'mssql'){
 			if(function_exists('sqlsrv_close')) return sqlsrv_close($con);
 			elseif(function_exists('mssql_close')) return mssql_close($con);
 		}elseif($sqltype == 'pgsql') return pg_close($con);
 		elseif($sqltype == 'oracle') return oci_close($con);
-		elseif($sqltype == 'sqlite3') return $con->close();
-		elseif($sqltype == 'sqlite') return sqlite_close($con);
-		elseif($sqltype == 'odbc') return odbc_close($con);
-		elseif($sqltype == 'pdo') return $con = null;
+		elseif($sqltype == 'sqlite3') $con->close();
+		elseif($sqltype == 'sqlite') sqlite_close($con);
+		elseif($sqltype == 'odbc') odbc_close($con);
+		elseif($sqltype == 'pdo') $con = null;
+		return null;
 	}
 }
 
@@ -255,21 +256,16 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 
 				if($type=='mysql'){
 					$query = "SELECT * FROM ".$db.".".$table." LIMIT ".$start.",".$limit.";";
-				}
-				elseif($type=='mssql'){
+				}elseif($type=='mssql'){
 					$query = "SELECT TOP ".$limit." * FROM ".$db."..".$table.";";
-				}
-				elseif($type=='pgsql'){
+				}elseif($type=='pgsql'){
 					$query = "SELECT * FROM ".$db.".".$table." LIMIT ".$limit." OFFSET ".$start.";";
-				}
-				elseif($type=='oracle'){
+				}elseif($type=='oracle'){
 					$limit = $start + $limit;
 					$query = "SELECT * FROM ".$db.".".$table." WHERE ROWNUM BETWEEN ".$start." AND ".$limit.";";
-				}
-				elseif($type=='sqlite' || $type=='sqlite3'){
+				}elseif($type=='sqlite' || $type=='sqlite3'){
 					$query = "SELECT * FROM ".$table." LIMIT ".$start.",".$limit.";";
-				}
-				else $query = "";
+				}else $query = "";
 
 				$pagination = "Limit <input type='text' id='dbLimit' value='".html_safe($limit)."' style='width:50px;'>
                                 <span class='button' onclick=\"db_pagination('reload');\">reload</span>".
@@ -305,14 +301,12 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 							}
 							$res .= "</table>";
 						}
-					}
-					else{
+					}else{
 						$res .= "<p>".html_safe($query).";&nbsp;&nbsp;&nbsp;<span class='strong'>[</span> <span style='color: red;'>error</span> <span class='strong'>]</span></p>";
 					}
 				}
 			}
-		}
-		else{
+		}else{
 			if(($type!='pdo') && ($type!='odbc')){
 				if($type=='mysql') $showdb = "SHOW DATABASES";
 				elseif($type=='mssql') $showdb = "SELECT name FROM master..sysdatabases";
@@ -349,6 +343,7 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 				$res = '<p>Execute SQL Query</p>';
 			}
 		}
+		sql_close($type, $con);
 	}
 	if(!empty($res)) output($res);
 	output('error');

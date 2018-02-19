@@ -1059,7 +1059,7 @@ if(!function_exists('file_icon')) {
             $ext = pathinfo($f, PATHINFO_EXTENSION);
             if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico'||$ext=='png') {
                 $img = get_resource('img');
-            } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar'||$ext=='7z') {
+            } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar'||$ext=='7z'||$ext=='apk') {
                 $img = get_resource('zip');
             } elseif($ext=='xml'||$ext=='htm'||$ext=='xhtml'||$ext=='ftl'||$ext=='xsl') {
                 $img = get_resource('html');
