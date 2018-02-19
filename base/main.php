@@ -716,7 +716,7 @@ if(!function_exists('show_all_files')){
 			}
 			$output .= "
 	<tr data-path=\"".html_safe(realpath($d).DIRECTORY_SEPARATOR)."\"><td><div class='cBox".$cboxException."'></div></td>
-	<td style='white-space:normal;'><img src='".get_resource('dir')."'> <a class='navigate'>[ ".html_safe($d)." ]</a><span class='".$action." floatRight'>action</span></td>
+	<td style='white-space:normal;'>".file_icon()." <a class='navigate'>[ ".html_safe($d)." ]</a><span class='".$action." floatRight'>action</span></td>
 	<td>DIR</td>";
 			foreach($cols as $k=>$v){
 				$sortable = "";
@@ -1054,23 +1054,31 @@ if(!function_exists('endsWith')) {
 }
 
 if(!function_exists('file_icon')) {
-    function file_icon($f){
-        $ext = pathinfo($f, PATHINFO_EXTENSION);
-        if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico') {
-            $img = get_resource('png');
-        } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar'||$ext=='7z') {
-            $img = get_resource('zip');
-        } elseif($ext=='xml'||$ext=='htm'||$ext=='xhtml'||$ext=='ftl'||$ext=='xsl') {
-            $img = get_resource('html');
-        } elseif($ext=='bat'||$ext=='cmd') {
-            $img = get_resource('sh');
-        } elseif($ext=='so'||$ext=='jnilib'||$ext=='dylib') {
-            $img = get_resource('dll');
+    function file_icon($f=null){
+        if($f==null) {
+            $img = get_resource('dir');
         } else {
-            $img = get_resource($ext);
-        }
-        if(!$img) {
-            $img = get_resource('file');
+            $ext = pathinfo($f, PATHINFO_EXTENSION);
+            if($ext=='jpg'||$ext=='jpeg'||$ext=='gif'||$ext=='ico'||$ext=='png') {
+                $img = get_resource('img');
+            } elseif($ext=='gz'||$ext=='tar'||$ext=='rar'||$ext=='deb'||$ext=='bz2'||$ext=='jar'||$ext=='7z') {
+                $img = get_resource('zip');
+            } elseif($ext=='xml'||$ext=='htm'||$ext=='xhtml'||$ext=='ftl'||$ext=='xsl') {
+                $img = get_resource('html');
+            } elseif($ext=='bat'||$ext=='cmd') {
+                $img = get_resource('sh');
+            } elseif($ext=='so'||$ext=='jnilib'||$ext=='dylib') {
+                $img = get_resource('dll');
+            } elseif($ext=='mp3'||$ext=='wav'||$ext=='wma') {
+                $img = get_resource('audio');
+            } elseif($ext=='mp4'||$ext=='rm'||$ext=='rmvb'||$ext=='mkv'||$ext=='vob'||$ext=='wmv'||$ext=='avi') {
+                $img = get_resource('video');
+            } else {
+                $img = get_resource($ext);
+            }
+            if(!$img) {
+                $img = get_resource('file');
+            }
         }
         return "<img src='".$img."'>";
     }
