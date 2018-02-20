@@ -71,7 +71,7 @@ if (function_exists('posix_getpwuid')) {
     } else {
         $hostname = pathinfo($hostname, PATHINFO_FILENAME);
     }
-    $prompt = "<span class='strong'>".$user."@".$hostname."</span>:";
+    $prompt = "<span class='strong' id='prompt_part'>".$user."@".$hostname.":</span>";
 }
 $GLOBALS['module']['terminal']['content'] = "<pre id='terminalOutput'></pre><table id='terminalPrompt'><tr><td class='colFit'>".$prompt."<span id='terminalCwd' class='strong'>".$cwd."&gt;</span></td><td id='terminalCommand'><input type='text' id='terminalInput' class='floatLeft' spellcheck='false'></td></tr></table>";
 

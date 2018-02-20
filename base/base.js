@@ -784,7 +784,8 @@ $('#terminalInput').on('keydown', function(e){
 		}else if(cmd!=''){
 			send_post({ terminalInput: cmd }, function(res){
 				var cwd = html_safe(get_cwd());
-				res = '<span class=\'strong\'>'+cwd+'&gt;</span>'+html_safe(cmd)+ '\n' + res+'\n';
+				var pph = $('#prompt_part').html();
+				res = (pph != null ? '<span class="strong">'+pph+'</span>' : '')+'<span class=\'strong\'>'+cwd+'&gt;</span>'+html_safe(cmd)+ '\n' + res+'\n';
 				$('#terminalOutput').append(res);
 				$(window).scrollTop($(document).height()-$(window).height());
                 $('#terminalInput').focus();
