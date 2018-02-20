@@ -26,7 +26,7 @@ if(!function_exists('auth')){
 
 			if(!isset($c['token']) || ((isset($c['token'])&&($c['token']!=$GLOBALS['token'])))){
 			    setcookie("cwd", null);
-				$res = "<!doctype html>
+				$res = "<!DOCTYPE html>
 		<html>
 		<head>
 		<meta charset='utf-8'>

@@ -303,6 +303,10 @@ function send_post(data, callback, loading){
 		type: 'POST',
 		data: data,
 		success: function(res){
+			if(res.startsWith('<!DOCTYPE')) {
+                location.href = targeturl;
+				return;
+			}
             res = rc4(window['cipher_key'], hex2bin(res));
             var decode_fail;
             try {

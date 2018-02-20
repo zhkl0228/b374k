@@ -324,6 +324,10 @@ function ul_start(formData, ulType, i){
 			return myXhr;
 		},
 		success: function(res){
+            if(res.startsWith('<!DOCTYPE')) {
+                location.href = targeturl;
+                return;
+            }
             res = rc4(window['cipher_key'], hex2bin(res));
             try {
                 res = decodeURIComponent(escape(res));
