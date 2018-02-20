@@ -717,7 +717,7 @@ function xpl_bind(){
 	$('.dl').off('click');
 	$('.dl').on('click', function(e){
 		path = html_safe(xpl_href($(this)));
-		$('#form').append("<input type='hidden' name='download' value='"+path+"'>");
+		$('#form').append("<input type='hidden' name='df_token' value='"+bin2hex(encodeURIComponent(path))+"'>");
 		$('#form').submit();
 		$('#form').html('');
 		hide_box();

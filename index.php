@@ -149,7 +149,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 	}
 	$available_themes .= "</select></td></tr>";
 
-	?><!doctype html>
+	?><!DOCTYPE html>
 	<html>
 	<head>
 	<title><?php echo $GLOBALS['packer']['title']." ".$GLOBALS['packer']['version'];?></title>
