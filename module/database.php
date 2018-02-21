@@ -572,8 +572,8 @@ elseif(isset($p['dp_token'])){
     $user = $p['dbUser'];
     $pass = $p['dbPass'];
     $port = $p['dbPort'];
-    $db = trim($p['dbDB']);
-    $table = trim($p['dbTable']);
+    $db = $p['dbDB'];
+    $table = $p['dbTable'];
 
     $support_dump = $type == 'mysql' && class_exists('mysqli');
     try {
@@ -586,8 +586,10 @@ elseif(isset($p['dp_token'])){
         header("Pragma: no-cache");
         header("Content-disposition: attachment; filename=\"".$db."_".$table.".sql\";");
 
-        $dump = new MySQLDump(new mysqli($host, $user, $pass, $db));
+        $conn = new mysqli($host, $user, $pass, $db);
+        $dump = new MySQLDump($conn);
         $dump->write(NULL, $table);
+        $conn->close();
     } catch (Exception $e) {
         echo $e->getMessage();
     }
