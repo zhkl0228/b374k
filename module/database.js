@@ -82,9 +82,29 @@ function db_nav_bind(){
     dbTable.on('click', function(){
         var type = $('#dbType').val();
         var table = $(this).html();
-        var db = $(this).parent().parent().parent().prev().html();
+        var db = $(this).parent().parent().parent().parent().prev().html();
 		db_query_tbl(type, db, table, 0, dbPageLimit);
 	});
+
+    var dumpTable = $('.dumpTable');
+    dumpTable.off('click');
+    dumpTable.on('click', function() {
+        var type = $('#dbType').val();
+        var table = $(this).next().html();
+        var db = $(this).parent().parent().parent().parent().prev().html();
+        var dbHost = $('#dbHost').val();
+        var dbUser = $('#dbUser').val();
+        var dbPass = $('#dbPass').val();
+        var dbPort = $('#dbPort').val();
+
+        var params = $.param({dbType:type, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort, dbDB:db, dbTable:table});
+        var dp_token = bin2hex(rc4(window['cipher_key'], params));
+
+        var form = $('#form');
+        form.append("<input type='hidden' name='dp_token' value='"+dp_token+"'>");
+        form.submit();
+        form.html('');
+    });
 }
 
 function db_connect(){

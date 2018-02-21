@@ -87,6 +87,15 @@ if(!function_exists('get_post')){
 	}
 }
 
+if(!function_exists('array_map_cb')) {
+    function array_map_cb($e){
+        if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
+            $e = convert_encode('utf-8', $GLOBALS['encode'], $e);
+        }
+        return $e;
+    }
+}
+
 if(!function_exists('get_nav')){
 	function get_nav($path){
 		return parse_dir($path);

