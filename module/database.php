@@ -528,7 +528,7 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 				$query_db = sql_query($type, $showdb, $con);
 
 				$support_dump = $type == 'mysql' && class_exists('mysqli');
-				$dump_table = $support_dump ? "<span class='dumpTable' style='cursor:pointer;padding-right:8px'>Dump</span>" : "";
+				$dump_table = $support_dump ? "<span class='dumpTable' style='cursor:pointer;margin-right:8px'>Dump</span>" : "";
 				if($query_db!=false) {
 					while($db_arr = sql_fetch_data($type, $query_db)){
 						foreach($db_arr as $db){
