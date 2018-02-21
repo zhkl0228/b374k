@@ -23,7 +23,7 @@ $GLOBALS['module']['database']['content'] = "
 		<td class='dbError'></td>
 	</tr>
 	<tr class='dbQueryRow' style='display:none;'>
-		<td colspan='3'><textarea id='dbQuery' style='min-height:140px;height:140px;'>You can also press ctrl+enter to submit</textarea></td>
+		<td colspan='3'><textarea id='dbQuery' style='min-height:140px;height:140px;' placeholder='You can also press ctrl+enter to submit'></textarea></td>
 	</tr>
 	<tr class='dbQueryRow' style='display:none;'>
 		<td style='width:120px;'><span class='button' onclick=\"db_run();\">run</span></td>
@@ -255,7 +255,7 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 				$limit = (int) (isset($p['dbLimit']))? trim($p['dbLimit']):100;
 
 				if($type=='mysql'){
-					$query = "SELECT * FROM ".$db.".".$table." LIMIT ".$start.",".$limit.";";
+					$query = "SELECT * FROM `".$db."`.`".$table."` LIMIT ".$start.",".$limit.";";
 				}elseif($type=='mssql'){
 					$query = "SELECT TOP ".$limit." * FROM ".$db."..".$table.";";
 				}elseif($type=='pgsql'){
@@ -282,7 +282,7 @@ elseif(isset($p['dbType'])&&isset($p['dbHost'])&&isset($p['dbUser'])&&isset($p['
 				if(trim($query) != ""){
 					$query_query = sql_query($type, $query, $con);
 					if($query_query!=false){
-						$res .= "<p>".html_safe($query).";&nbsp;&nbsp;&nbsp;<span class='strong'>[</span> ok <span class='strong'>]</span></p>";
+						$res .= "<p><span class='strong' style='cursor: default;' ondblclick=\"$('#dbQuery').val($(this).text())\">".html_safe($query).";</span>&nbsp;&nbsp;&nbsp;<span class='strong'>[</span> ok <span class='strong'>]</span></p>";
 						if(!empty($pagination)){
 							$res .= "<p>".$pagination."</p>";
 						}
