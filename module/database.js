@@ -59,16 +59,6 @@ function db_bind(){
 		change_db_type();
 	});
 
-	$('#dbQuery').on('focus', function(e){
-		if($('#dbQuery').val()=='You can also press ctrl+enter to submit'){
-			$('#dbQuery').val('');
-		}
-	});
-	$('#dbQuery').on('blur', function(e){
-		if($('#dbQuery').val()==''){
-			$('#dbQuery').val('You can also press ctrl+enter to submit');
-		}
-	});
 	$('#dbQuery').on('keydown', function(e){
 		if(e.ctrlKey && (e.keyCode == 10 || e.keyCode == 13)){
 			db_run();
@@ -140,7 +130,7 @@ function db_run(){
     var dbPort = $('#dbPort').val();
     var dbQuery = $('#dbQuery').val();
 
-	if((dbQuery!='')&&(dbQuery!='You can also press ctrl+enter to submit')){
+	if((dbQuery!='')){
 		send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort, dbQuery:dbQuery}, function(res){
 			if(res!='error'){
 				$('#dbResult').html(res);
