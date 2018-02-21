@@ -5,7 +5,6 @@ auth();
 chdir(get_cwd());
 $nav = get_nav(get_cwd());
 function array_map_cb($e) {
-    $e = rawurldecode($e);
     if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
         $e = convert_encode('utf-8', $GLOBALS['encode'], $e);
     }

