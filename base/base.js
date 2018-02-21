@@ -768,6 +768,10 @@ function multimedia(path){
 }
 
 $('#terminalInput').on('keydown', function(e){
+    if(e.ctrlKey && e.keyCode === 85){//ctrl+u
+    	$(this).val('');
+        return;
+    }
 	if(e.keyCode==13){
 		var cmd = $(this).val();
 		var index = terminalHistory.indexOf(cmd);
