@@ -13,6 +13,7 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 if(!function_exists('auth')){
 	function auth(){
+	    $token_timeout = time()+3600*24;//24 hours
 		if(isset($GLOBALS['token']) && (trim($GLOBALS['token'])!='')){
 			$c = $_COOKIE;
 			$p = $_POST;
@@ -24,7 +25,7 @@ if(!function_exists('auth')){
                         $_SESSION['token'] = $token;
                     }
                     $c['token'] = $token;
-					setcookie('token', $token, time()+7200, '/');//2 hours
+					setcookie('token', $token, $token_timeout, '/');
 					header("Location: ".get_self());
 				}
 			}
@@ -35,7 +36,7 @@ if(!function_exists('auth')){
             }
             if (!$my && $s && isset($_SESSION['token'])) {
                 $my = $_SESSION['token'];
-                setcookie('token', $GLOBALS['token'], time()+7200, '/');//2 hours
+                setcookie('token', $GLOBALS['token'], $token_timeout, '/');
             }
 			if($my != $GLOBALS['token']){
 			    setcookie("cwd", null);
