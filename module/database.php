@@ -565,7 +565,7 @@ elseif(isset($p['dp_token'])){
     $post_str = rc4($GLOBALS['cipher_key'], hex2bin($dp_token));
     parse_str($post_str, $post);
     $post = fix_magic_quote($post);
-    $p = array_map("array_map_cb", $post);
+    $p = array_map("to_encode", $post);
 
     $type = $p['dbType'];
     $host = $p['dbHost'];
