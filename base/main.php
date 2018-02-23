@@ -13,8 +13,8 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
 if(!function_exists('auth')){
 	function auth(){
-	    $token_timeout = time()+3600*24;//24 hours
 		if(isset($GLOBALS['token']) && (trim($GLOBALS['token'])!='')){
+            $token_timeout = time()+3600*24;//24 hours
 			$c = $_COOKIE;
 			$p = $_POST;
 			$s = session_start();

