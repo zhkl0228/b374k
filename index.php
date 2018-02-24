@@ -37,7 +37,9 @@ foreach($res_files as $res) {
         if($ext == 'png' || $ext == 'jpg' || $ext == 'jpeg') {
             $res_data = "data:image/".$ext.";base64," . base64_encode($res_data);
         }
-        $resources_content .= "\$GLOBALS['resources']['" . $info['filename'] . "'] = '" . base64_encode(gzdeflate($res_data, 9)) . "';\n";
+        $base64_data = base64_encode(gzdeflate($res_data, 9));
+        $GLOBALS['resources'][$info['filename']] = $base64_data;
+        $resources_content .= "\$GLOBALS['resources']['" . $info['filename'] . "'] = '" . $base64_data . "';\n";
     }
 }
 $resources_data = str_replace("//<__RES__>", $resources_content, $resources_data);
@@ -156,6 +158,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 	<title><?php echo $GLOBALS['packer']['title']." ".$GLOBALS['packer']['version'];?></title>
 	<meta charset='utf-8'>
 	<meta name='robots' content='noindex, nofollow, noarchive'>
+    <link rel='SHORTCUT ICON' href='<?php echo packer_get_resource('b374k');?>'>
 	<style type="text/css">
 	<?php echo $css_code;?>
 	#devTitle{
@@ -582,6 +585,13 @@ function packer_check_module($module){
 function packer_pack_js($str){
 	$packer = new JavaScriptPacker($str, 0, true, false);
 	return $packer->pack();
+}
+
+function packer_get_resource($type){
+    if(isset($GLOBALS['resources'][$type])){
+        return gzinflate(base64_decode($GLOBALS['resources'][$type]));
+    }
+    return false;
 }
 
 function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password, $salt=null){
