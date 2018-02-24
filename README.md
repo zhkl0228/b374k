@@ -59,7 +59,7 @@ options :
 例子：
 
 ```
-php -f index.php -- -o wp.php -p b374k -s -b -z rc4 -c 9 -m convert,database,info,network,processes -t bluebook -u utf-8
+php -f index.php -- -o wp.php -p b374k -s -b -z rc4 -c 9 -m convert,database,info,network,processes -t monospace -u utf-8
 ```
 
 或者，你可以直接从浏览器访问index.php，使用图形化界面生成你的webshell：

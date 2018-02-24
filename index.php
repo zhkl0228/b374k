@@ -427,6 +427,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 function load_modules_data($modules) {
     $module_code = "";
     $js_code = "";
+    $supported_types = array('executable', 'gcc', 'java', 'php', 'python');
     foreach($modules as $module){
         $module = trim($module);
         $filename = $GLOBALS['packer']['module_dir'].$module;
@@ -438,8 +439,11 @@ function load_modules_data($modules) {
                 $rs_content = "";
                 foreach($files as $rs) {
                     if(!in_array($rs, array(".",".."))) {
-                        $rs_data = packer_read_file($GLOBALS['packer']['network_rs_dir'] . $rs);
-                        $rs_content .= "\$GLOBALS['resources']['rs_" . pathinfo($rs, PATHINFO_FILENAME) . "'] = '" . base64_encode(gzdeflate($rs_data, 9)) . "';\n";
+                        $name = pathinfo($rs, PATHINFO_FILENAME);
+                        if (in_array($name, $supported_types)) {
+                            $rs_data = packer_read_file($GLOBALS['packer']['network_rs_dir'] . $rs);
+                            $rs_content .= "\$GLOBALS['resources']['rs_" . $name . "'] = '" . base64_encode(gzdeflate($rs_data, 9)) . "';\n";
+                        }
                     }
                 }
                 $php_data = str_replace("//<__RS__>", $rs_content, $php_data);
@@ -448,7 +452,11 @@ function load_modules_data($modules) {
             $module_code .= $php_data;
         }
         if(is_file($filename.".js")) {
-            $js_code .= "\n".packer_read_file($filename.".js")."\n";
+            $js_data = packer_read_file($filename.".js");
+            if($module == 'network') {
+                $js_data = str_replace("//<__ST__>", "var supported_types = [\"" . join('","', $supported_types) . "\"];", $js_data);
+            }
+            $js_code .= "\n".$js_data."\n";
         }
     }
     return array($module_code, $js_code);

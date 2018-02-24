@@ -2,11 +2,15 @@ Zepto(function($){
 	rs_init();
 });
 
+//<__ST__>
+
 function rs_init(){
 	if(evalReady&&(evalSupported!=null)&&(evalSupported!='')){
 		var splits = evalSupported.split(",");
 		$.each(splits, function(i, k){
-			$('.rsType').append("<option>"+k+"</option>");
+			if(supported_types.indexOf(k) != -1) {
+                $('.rsType').append("<option>"+k+"</option>");
+            }
 		});
 	}
 	else setTimeout('rs_init()', 1000);

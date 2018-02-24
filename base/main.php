@@ -358,7 +358,6 @@ if(!function_exists('decompress')){
 if(!function_exists('download')){
 	function download($url ,$saveas){
 		if(!preg_match("/[a-z]+:\/\/.+/",$url)) return false;
-		$filename = basename($url);
 
 		if($content = read_file($url)){
 			if(is_file($saveas)) unlink($saveas);
@@ -367,16 +366,16 @@ if(!function_exists('download')){
 			}
 		}
 
-		$buff = execute("wget ".$url." -O ".$saveas);
+		execute("wget ".$url." -O ".$saveas);
 		if(is_file($saveas)) return true;
 
-		$buff = execute("curl ".$url." -o ".$saveas);
+		execute("curl ".$url." -o ".$saveas);
 		if(is_file($saveas)) return true;
 
-		$buff = execute("lwp-download ".$url." ".$saveas);
+		execute("lwp-download ".$url." ".$saveas);
 		if(is_file($saveas)) return true;
 
-		$buff = execute("lynx -source ".$url." > ".$saveas);
+		execute("lynx -source ".$url." > ".$saveas);
 		if(is_file($saveas)) return true;
 
 		return false;
@@ -386,26 +385,25 @@ if(!function_exists('download')){
 if(!function_exists('get_fileperms')){
 	function get_fileperms($file){
 		if($perms = @fileperms($file)){
-		$flag = 'u';
-		if(($perms & 0xC000) == 0xC000)$flag = 's';
-		elseif(($perms & 0xA000) == 0xA000)$flag = 'l';
-		elseif(($perms & 0x8000) == 0x8000)$flag = '-';
-		elseif(($perms & 0x6000) == 0x6000)$flag = 'b';
-		elseif(($perms & 0x4000) == 0x4000)$flag = 'd';
-		elseif(($perms & 0x2000) == 0x2000)$flag = 'c';
-		elseif(($perms & 0x1000) == 0x1000)$flag = 'p';
-		$flag .= ($perms & 00400)? 'r':'-';
-		$flag .= ($perms & 00200)? 'w':'-';
-		$flag .= ($perms & 00100)? 'x':'-';
-		$flag .= ($perms & 00040)? 'r':'-';
-		$flag .= ($perms & 00020)? 'w':'-';
-		$flag .= ($perms & 00010)? 'x':'-';
-		$flag .= ($perms & 00004)? 'r':'-';
-		$flag .= ($perms & 00002)? 'w':'-';
-		$flag .= ($perms & 00001)? 'x':'-';
-		return $flag;
-		}
-		else return "???????????";
+            $flag = 'u';
+            if(($perms & 0xC000) == 0xC000)$flag = 's';
+            elseif(($perms & 0xA000) == 0xA000)$flag = 'l';
+            elseif(($perms & 0x8000) == 0x8000)$flag = '-';
+            elseif(($perms & 0x6000) == 0x6000)$flag = 'b';
+            elseif(($perms & 0x4000) == 0x4000)$flag = 'd';
+            elseif(($perms & 0x2000) == 0x2000)$flag = 'c';
+            elseif(($perms & 0x1000) == 0x1000)$flag = 'p';
+            $flag .= ($perms & 00400)? 'r':'-';
+            $flag .= ($perms & 00200)? 'w':'-';
+            $flag .= ($perms & 00100)? 'x':'-';
+            $flag .= ($perms & 00040)? 'r':'-';
+            $flag .= ($perms & 00020)? 'w':'-';
+            $flag .= ($perms & 00010)? 'x':'-';
+            $flag .= ($perms & 00004)? 'r':'-';
+            $flag .= ($perms & 00002)? 'w':'-';
+            $flag .= ($perms & 00001)? 'x':'-';
+            return $flag;
+		}else return "???????????";
 	}
 }
 
