@@ -50,34 +50,29 @@ if(!function_exists('sql_connect')){
                 $connection = new mysqli($sqlhost, $sqluser, $sqlpass);
                 $connection->set_charset($encode);
                 return $connection;
-            }
-			elseif(function_exists('mysql_connect')) {
+            }elseif(function_exists('mysql_connect')) {
                 $connection = @mysql_connect($sqlhost, $sqluser, $sqlpass);
                 mysql_set_charset($encode, $connection);
                 return $connection;
             }
-		}
-		elseif($sqltype == 'mssql'){
+		}elseif($sqltype == 'mssql'){
 			if(function_exists('sqlsrv_connect')){
 				$coninfo = array("UID"=>$sqluser, "PWD"=>$sqlpass);
 				return @sqlsrv_connect($sqlhost,$coninfo);
 			}
 			elseif(function_exists('mssql_connect')) return @mssql_connect($sqlhost, $sqluser, $sqlpass);
-		}
-		elseif($sqltype == 'pgsql'){
+		}elseif($sqltype == 'pgsql'){
 			$hosts = explode(":", $sqlhost);
 			if(count($hosts)==2){
 				$host_str = "host=".$hosts[0]." port=".$hosts[1];
 			}
 			else $host_str = "host=".$sqlhost;
 			if(function_exists('pg_connect')) return @pg_connect("$host_str user=$sqluser password=$sqlpass");
-		}
-		elseif($sqltype == 'oracle'){ if(function_exists('oci_connect')) return @oci_connect($sqluser, $sqlpass, $sqlhost); }
+		}elseif($sqltype == 'oracle'){ if(function_exists('oci_connect')) return @oci_connect($sqluser, $sqlpass, $sqlhost); }
 		elseif($sqltype == 'sqlite3'){
 			if(class_exists('SQLite3')) if(!empty($sqlhost)) return new SQLite3($sqlhost);
 			else return false;
-		}
-		elseif($sqltype == 'sqlite'){ if(function_exists('sqlite_open')) return @sqlite_open($sqlhost); }
+		}elseif($sqltype == 'sqlite'){ if(function_exists('sqlite_open')) return @sqlite_open($sqlhost); }
 		elseif($sqltype == 'odbc'){ if(function_exists('odbc_connect')) return @odbc_connect($sqlhost, $sqluser, $sqlpass); }
 		elseif($sqltype == 'pdo'){
 			if(class_exists('PDO')) if(!empty($sqlhost)) return new PDO($sqlhost, $sqluser, $sqlpass);

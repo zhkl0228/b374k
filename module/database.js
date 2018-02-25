@@ -113,10 +113,10 @@ function db_connect(){
     var dbUser = $('#dbUser').val();
     var dbPass = $('#dbPass').val();
     var dbPort = $('#dbPort').val();
-	send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort}, function(res){
-		if(res!='error'){
+	send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort}, function(r){
+		if(r!='error'){
             $('.dbError').html('');
-			$('#dbNav').html(res);
+			$('#dbNav').html(r);
 			$('.dbHostRow').hide();
 			$('.dbUserRow').hide();
 			$('.dbPassRow').hide();

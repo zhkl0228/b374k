@@ -323,36 +323,25 @@ function ul_start(formData, ulType, i){
 			}
 			return myXhr;
 		},
-		success: function(res){
-            if(res.startsWith('<!DOCTYPE')) {
-                location.href = targeturl;
+		success: function(r){
+            var ret = parse_resp(r);
+            if(ret == null) {
                 return;
             }
-            res = rc4(window['cipher_key'], hex2bin(res));
-            try {
-                res = decodeURIComponent(escape(res));
-            } catch(e) {}
 
-            var index = res.indexOf('|');
-            if(index !== -1) {
-                $('#server_date').html(res.substring(0, index));
-                res = res.substring(index + 1);
-            }
-            index = res.indexOf('|');
-            if(index !== -1) {
-                $('#client_ip').html(res.substring(0, index));
-                res = res.substring(index + 1);
-            }
+            $('#server_date').html(ret['date']);
+            $('#client_ip').html(ret['ip']);
 
-			if(res.match(/Warning.*POST.*Content-Length.*of.*bytes.*exceeds.*the.*limit.*of/)){
+            var data = ret['data'];
+			if(data.match(/Warning.*POST.*Content-Length.*of.*bytes.*exceeds.*the.*limit.*of/)){
 				res = 'error';
 			}
 
-			if(res=='error'){
+			if(data=='error'){
 				$('.ulProgress'+ulType+i).html('( <span style="color: red;">failed</span> )');
 			}
 			else{
-				$('.ulRes'+ulType+i).html(res);
+				$('.ulRes'+ulType+i).html(data);
 			}
 			loading_stop();
 		},

@@ -150,11 +150,9 @@ elseif(isset($p['delete'])){
 	$dirname = dirname($path);
 	if(is_file($path)){
 		if(unlink($path)) $res = $dirname;
-	}
-	elseif(is_dir($path)){
+	}elseif(is_dir($path)){
 		if(rmdirs($path)>0) $res = $dirname;
-	}
-	else $res = "error";
+	}else $res = "error";
 	if(file_exists($path)) $res = "error";
 	output($res);
 }

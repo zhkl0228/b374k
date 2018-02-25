@@ -290,48 +290,62 @@ function time(){
 
 function send_post(data, callback, loading){
 	if(loading==null) loading_start();
-	var enc = '';
+	var d = '';
 	if(typeof data == "object") {
-		enc = $.param(data);
+		d = $.param(data);
 	}
-	output("data : " + enc);
-	data = {
-		args: bin2hex(rc4(window['cipher_key'], enc))
+	output("data : " + d);
+	var as = {
+		args: bin2hex(rc4(window['cipher_key'], d))
 	};
 	$.ajax({
 		url: targeturl,
 		type: 'POST',
-		data: data,
-		success: function(res){
-			if(res.startsWith('<!DOCTYPE')) {
-                location.href = targeturl;
+		data: as,
+		success: function(r){
+			var ret = parse_resp(r);
+			if(ret == null) {
 				return;
-			}
-            res = rc4(window['cipher_key'], hex2bin(res));
-            var decode_fail;
-            try {
-                res = decodeURIComponent(escape(res));
-                decode_fail = false;
-            } catch(e) {
-            	decode_fail = true;
-			}
+            }
 
-            // output("callback : " + res);
-            var index = res.indexOf('|');
-            if(index !== -1) {
-                $('#server_date').html(res.substring(0, index));
-                res = res.substring(index + 1);
-            }
-            index = res.indexOf('|');
-            if(index !== -1) {
-                $('#client_ip').html(res.substring(0, index));
-                res = res.substring(index + 1);
-            }
-            callback(res, decode_fail);
+            $('#server_date').html(ret['date']);
+            $('#client_ip').html(ret['ip']);
+
+            callback(ret['data'], ret['fail'], ret['code']);
             if(loading==null) loading_stop();
 		},
 		error: function(){ if(loading==null) loading_stop(); }
 	});
+}
+
+function parse_resp(res) {
+    if(res.startsWith('<!DOCTYPE')) {
+        location.href = targeturl;
+        return null;
+    }
+    res = rc4(window['cipher_key'], hex2bin(res));
+    var fail;
+    try {
+        res = decodeURIComponent(escape(res));
+        fail = false;
+    } catch(e) {
+        fail = true;
+    }
+
+    // output("callback : " + res);
+    var index = res.indexOf('|');
+    var date = res.substring(0, index);
+    res = res.substring(index + 1);
+
+    index = res.indexOf('|');
+    var ip = res.substring(0, index);
+    res = res.substring(index + 1);
+
+    index = res.indexOf('|');
+    var code = parseInt(res.substring(0, index));
+    res = res.substring(index+1);
+
+    return { fail: fail, date: date, ip: ip, data: res, code: code };
 }
 
 function loading_start(){

