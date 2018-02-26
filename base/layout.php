@@ -4,6 +4,7 @@
 	@ob_end_clean();
 	error_reporting(0);
 	@ini_set('display_errors','0');
+    @ini_set('zlib.output_compression', TRUE);
 ?><!DOCTYPE html>
 <html>
 <head>

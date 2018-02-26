@@ -578,6 +578,7 @@ elseif(isset($p['dp_token'])){
             throw new Exception("Unsupported dump table");
         }
 
+        @ini_set('zlib.output_compression', TRUE);
         header("Content-Type: application/octet-stream");
         header("Cache-Control: no-cache");
         header("Pragma: no-cache");

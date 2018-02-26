@@ -170,7 +170,7 @@ if(!function_exists('fix_magic_quote')){
 		if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()){
 			if(is_array($arr)){
 				foreach($arr as $k=>$v){
-					if(is_array($v)) $arr[$k] = clean($v);
+					if(is_array($v)) $arr[$k] = fix_magic_quote($v);
 					else $arr[$k] = (empty($quotes_sybase) || $quotes_sybase === 'off')? stripslashes($v) : stripslashes(str_replace("\'\'", "\'", $v));
 				}
 			}
@@ -999,6 +999,9 @@ if(!function_exists('output')){
 	function output($str, $err=null){
 		$error = @ob_get_contents();
 		@ob_end_clean();
+        if (strlen($str) > 10240) {
+            @ini_set('zlib.output_compression', TRUE);
+        }
 		header("Content-Type: text/plain; charset=utf-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");

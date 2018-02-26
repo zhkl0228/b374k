@@ -511,7 +511,7 @@ function packer_fix_magic_quote($arr){
 	if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()){
 		if(is_array($arr)){
 			foreach($arr as $k=>$v){
-				if(is_array($v)) $arr[$k] = clean($v);
+				if(is_array($v)) $arr[$k] = packer_fix_magic_quote($v);
 				else $arr[$k] = (empty($quotes_sybase) || $quotes_sybase === 'off')? stripslashes($v) : stripslashes(str_replace("\'\'", "\'", $v));
 			}
 		}
