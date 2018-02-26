@@ -34,10 +34,10 @@ if(!function_exists('decode')){
         if(strlen($salt) < 1) {
             $salt = null;
         }
-        $res .= decode_line("Crypt (all Unix servers)", enctype_crypt($str, $salt), "input");
-        $res .= decode_line("MD5 (Apache servers only)", cryptApr1Md5($str, $salt), "input");
+        $res .= decode_line("Crypt(Unix)", enctype_crypt($str, $salt), "input");
+        $res .= decode_line("MD5(Apache)", cryptApr1Md5($str, $salt), "input");
 
-        $res .= decode_line("SHA-1 (Netscape-LDIF / Apache servers)", enctype_sha1($str), "input");
+        $res .= decode_line("SHA-1(Apache)", enctype_sha1($str), "input");
 
 		$res .= decode_line("base64 encode", base64_encode($str), "textarea");
 		$base64_decoded = base64_decode($str);

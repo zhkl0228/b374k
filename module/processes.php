@@ -1,7 +1,7 @@
 <?php
 $GLOBALS['module']['processes']['id'] = "processes";
 $GLOBALS['module']['processes']['title'] = "Processes";
-$GLOBALS['module']['processes']['js_ontabselected'] = "show_processes();";
+$GLOBALS['module']['processes']['js_ontabselected'] = "";
 $GLOBALS['module']['processes']['content'] = "";
 
 if(!function_exists('show_processes')){

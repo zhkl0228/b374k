@@ -7,7 +7,7 @@ var dbSupported = "";
 var dbPageLimit = 50;
 
 function db_init(){
-	if((dbSupported = localStorage.getItem('db_supported'))){
+	if((dbSupported = localStorage.getItem('dbSupported'))){
 		db_bind();
 		output("db : "+dbSupported);
 		db_add_supported();

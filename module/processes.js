@@ -1,23 +1,33 @@
 Zepto(function($){
-	show_processes();
+	var ps = localStorage.getItem('process');
+	if(ps) {
+		ps_init(ps);
+	} else {
+        show_processes();
+	}
 });
 
 function show_processes(){
 	send_post({showProcesses:''}, function(res){
 		if(res!='error'){
-			$('#processes').html(res);
-			sorttable.k($('#psTable').get(0));
-			ps_bind();
+			localStorage.setItem('process', res);
+            ps_init(res);
 		}
 	});
 }
 
+function ps_init(process) {
+    $('#processes').html(process);
+    sorttable.k($('#psTable').get(0));
+    ps_bind();
+}
+
 function ps_bind(){
-	$('.kill').off('click');
-	$('.kill').on('click', function(e){
+	var k = $('.kill');
+	k.off('click');
+	k.on('click', function(e){
 		kill_pid(ps_get_pid($(this)));
 	});
-
 
 	cbox_bind('psTable','ps_update_status');
 }

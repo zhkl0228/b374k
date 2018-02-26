@@ -43,8 +43,8 @@ Zepto(function($){
 		});
 
 		$('.menuitem').on('click', function(e){
-			selectedTab = $(this).attr('href').substr(2);
-			show_tab(selectedTab);
+			var tab = $(this).attr('href').substr(2);
+			show_tab(tab);
 		});
 
 		$('#logout').on('click', function(e){
@@ -110,9 +110,6 @@ Zepto(function($){
 				$('#toggleBasicInfo').hide();
 			}
 		}
-		else{
-			info_refresh();
-		}
 
 		if(history.pushState){
 			window.onpopstate = function(event) { refresh_tab(); };
@@ -153,7 +150,7 @@ function layout_portable(){
 	menu.children().css('width', '100%');
 	menu.hide();
 	$('#menuButton').remove();	
-	headerNav.prepend("<div id='menuButton' class='boxtitle' onclick=\"$('#menu').toggle();\" style='float-left;display:inline;padding:4px 8px;margin-right:8px;'>menu</div>");
+	headerNav.prepend("<div id='menuButton' class='boxtitle' onclick=\"$('#menu').toggle();\" style='float-left;display:inline;padding:4px 8px;margin-right:8px;'>MENU</div>");
 	menu.attr('onclick', "\$('#menu').hide();");
 	
 	$('#xplTable tr>:nth-child(4)').hide();

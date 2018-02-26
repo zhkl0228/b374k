@@ -52,10 +52,10 @@ if(!function_exists('auth')){
 		<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, user-scalable=0'>
 		<title>Welcome back!~My dear master</title>
 		</head>
-		<body style='background:#f8f8f8;color:#000000;padding:0;margin:0;'><br><p><center><noscript>You need to enable javascript</noscript></center></p>
+		<body style='background:#f8f8f8;color:#000000;padding:0;margin-top:5px;'>
 		<script type='text/javascript'>
 		var d = document;
-		d.write(\"<br><br><form method='post' action='".get_self()."'><center><input type='password' id='token' name='token' style='font-size:34px;width:34%;outline:none;text-align:center;background:#ffffff;padding:8px;border:1px solid #cccccc;border-radius:8px;color:#000000;'></center></form>\");
+		d.write(\"<form method='post' action='".get_self()."'><center><input type='password' id='token' name='token' style='font-size:34px;width:95%;outline:none;text-align:center;background:#ffffff;padding:8px;border:1px solid #cccccc;border-radius:8px;color:#000000;'></center></form>\");
 		d.getElementById('token').focus();
 		d.getElementById('token').setAttribute('autocomplete', 'off');
 		</script>

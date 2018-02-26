@@ -870,6 +870,7 @@ function eval_go(){
 		send_post({ evalInput:evalInput, evalType:evalType, evalOptions:evalOptions, evalArguments:evalArguments },
 			function(res){
 				if(res!='error'){
+				    localStorage.setItem('eval', evalInput);
                     var splits = res.split('{[|b374k|]}');
 					if(splits.length==2){
 						$('#evalOutput').html(splits[0]+"<hr>"+splits[1]);
@@ -933,12 +934,17 @@ function eval_bind(){
 		if($.trim(args.val())=='') args.val('Arguments');
 	});
 
-	$('#evalInput').on('keydown', function(e){
+	var ei = $('#evalInput');
+	ei.on('keydown', function(e){
 		if(e.ctrlKey && (e.keyCode == 10 || e.keyCode == 13)){
 			eval_go();
 		}
 		fix_tabchar(this, e);
 	});
+	var eval = localStorage.getItem('eval');
+	if(eval) {
+	    ei.val(eval);
+    }
 }
 
 $.fn.setCursorPosition = function(position){
