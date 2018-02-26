@@ -1,5 +1,5 @@
 <?php
-$GLOBALS['ver'] = "4.0.3";
+$GLOBALS['ver'] = "4.1.0";
 $GLOBALS['title'] = "a374k";
 
 @ob_start();
