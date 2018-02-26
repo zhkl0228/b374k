@@ -266,22 +266,25 @@ if(!function_exists('zip')){
 		if(class_exists("ZipArchive")){
 			$zip = new ZipArchive();
 			if(!$zip->open($archive, 1)) return $status;
+			$top = pathinfo($archive, PATHINFO_FILENAME).'/';
+			$zip->addEmptyDir($top);
 
 			if(!is_array($files)) $files = array($files);
 			foreach($files as $file){
+			    if(!is_readable($file)) continue;
 				$file = str_replace(get_cwd(), '', $file);
 				$file = str_replace('\\', '/', $file);
 				if(is_dir($file)){
-					$filesIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($file), 1);
-					foreach($filesIterator as $iterator){
-						$iterator = str_replace('\\', '/', $iterator);
-						if(in_array(substr($iterator, strrpos($iterator, '/')+1), array('.', '..'))) continue;
+					$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($file), 1);
+					foreach($iterator as $f){
+						$f = str_replace('\\', '/', $f);
+						if(in_array(substr($f, strrpos($f, '/')+1), array('.', '..'))) continue;
 
-						if(is_dir($iterator)) $zip->addEmptyDir(str_replace($file.'/', '', $iterator.'/'));
-						else if(is_file($iterator)) $zip->addFromString(str_replace($file.'/', '', $iterator), read_file($iterator));
+						if(is_dir($f)) $zip->addEmptyDir($top.str_replace($file.'/', '', $f.'/'));
+						else if(is_file($f)) $zip->addFromString($top.str_replace($file.'/', '', $f), read_file($f));
 					}
 				}
-				elseif(is_file($file)) $zip->addFromString(basename($file), read_file($file));
+				elseif(is_file($file)) $zip->addFromString($top.basename($file), read_file($file));
 			}
 			if($zip->getStatusString()!==false) $status = true;
 			$zip->close();
@@ -1021,18 +1024,18 @@ if(!function_exists('convert_encode')) {
 }
 
 if(!function_exists('to_encode')) {
-    function to_encode($e){
+    function to_encode($e,$from='utf-8'){
         if (isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8') {
-            return convert_encode('utf-8', $GLOBALS['encode'], $e);
+            return convert_encode($from, $GLOBALS['encode'], $e);
         }
         return $e;
     }
 }
 
 if(!function_exists('from_encode')) {
-    function from_encode($e){
+    function from_encode($e,$to='utf-8'){
         if (isset($GLOBALS['encode']) && $GLOBALS['encode'] != 'utf-8') {
-            return convert_encode($GLOBALS['encode'], 'utf-8', $e);
+            return convert_encode($GLOBALS['encode'], $to, $e);
         }
         return $e;
     }
