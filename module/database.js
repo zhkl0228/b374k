@@ -113,9 +113,14 @@ function db_connect(){
     var dbUser = $('#dbUser').val();
     var dbPass = $('#dbPass').val();
     var dbPort = $('#dbPort').val();
-	send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort}, function(r){
-		if(r!='error'){
-            $('.dbError').html('');
+	send_post({dbType:dbType, dbHost:dbHost, dbUser:dbUser, dbPass:dbPass, dbPort:dbPort}, function(r,_,c){
+	    var e = $('.dbError');
+	    if(c !== 0) {
+	        e.html('<span style="color: red;">' + r + '</span>');
+            return;
+        }
+		if(r!=='error'){
+            e.html('');
 			$('#dbNav').html(r);
 			$('.dbHostRow').hide();
 			$('.dbUserRow').hide();
@@ -125,7 +130,7 @@ function db_connect(){
 			$('.dbQueryRow').show();
 			$('#dbBottom').show();
 			db_nav_bind();
-		}else $('.dbError').html('<span style="color: red;">Unable to connect</span>');
+		}else e.html('<span style="color: red;">Unable to connect</span>');
 	});
 }
 
