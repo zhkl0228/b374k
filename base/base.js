@@ -512,7 +512,7 @@ function mass_act(type){
 	}
     else if(type==='download (zip)'){
         arcType = 'download';
-        arcFilename = new Date().getTime()+'.zip';
+        arcFilename = new Date().format('yyyyMMddhhmmssS')+'.zip';
 
         if(buffer.length>0){
             massBuffer = '';
